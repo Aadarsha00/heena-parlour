@@ -1,4 +1,10 @@
 {
   "version": 2,
-  "routes": [{ "src": "/(.*)", "dest": "/index.html" }]
+  "routes": [
+    {
+      "src": "/(.*)",
+      "has": [{ "type": "header", "key": "accept", "value": "text/html" }],
+      "dest": "/index.html"
+    }
+  ]
 }
