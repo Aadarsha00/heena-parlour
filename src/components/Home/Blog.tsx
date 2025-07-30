@@ -6,8 +6,7 @@ const services = [
     title: "Threading",
     description:
       "Perfect your features with our precise threading services. We shape your brows to complement your face.",
-    image:
-      "https://images.unsplash.com/photo-1588776814546-dc3d9c20f43e?auto=format&fit=crop&w=600&q=80",
+    image: "/pictures/img2.jpg",
     prices: [
       { name: "Eyebrow Threading", price: "$12" },
       { name: "Upper Lip Threading", price: "$6" },
@@ -19,8 +18,7 @@ const services = [
     title: "Henna",
     description:
       "Perfect your features with our precise threading services. We shape your brows to complement your face.",
-    image:
-      "https://images.unsplash.com/photo-1602352737633-f7e148fe9d71?auto=format&fit=crop&w=600&q=80",
+    image: "./pictures/image1.jpg",
     prices: [
       { name: "Eyebrow Threading", price: "$12" },
       { name: "Upper Lip Threading", price: "$6" },
@@ -32,8 +30,7 @@ const services = [
     title: "Lash Extension",
     description:
       "Perfect your features with our precise threading services. We shape your brows to complement your face.",
-    image:
-      "https://images.unsplash.com/photo-1594824476967-48c8b9642738?auto=format&fit=crop&w=600&q=80",
+    image: "./pictures/img4.jpg",
     prices: [
       { name: "Eyebrow Threading", price: "$12" },
       { name: "Upper Lip Threading", price: "$6" },

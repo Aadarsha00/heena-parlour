@@ -32,7 +32,8 @@ const AppointmentBooking = () => {
 
   const daysInMonth = viewDate.daysInMonth();
   const startDay = viewDate.startOf("month").day(); // 0 = Sunday
-  const leadingEmptyDays = (startDay + 6) % 7; // Make Monday start
+  // Fix: Properly calculate leading empty days for Monday start
+  const leadingEmptyDays = startDay === 0 ? 6 : startDay - 1;
 
   const calendarDays = [
     ...Array(leadingEmptyDays).fill(null),
@@ -47,79 +48,77 @@ const AppointmentBooking = () => {
   return (
     <div className="flex flex-col md:flex-row justify-between px-6 pt-12 pb-6 gap-12 font-serif text-[#222] bg-[#fffefc] min-h-screen">
       <div className="w-full md:w-2/3 space-y-6 mt-10 ml-6">
-        <h2 className="text-3xl font-medium ml-6">Book Your Appointment</h2>
+        <h2 className="text-3xl font-medium ml-16">Book Your Appointment</h2>
 
         {/* Step Tracker */}
-        <div className="flex space-x-6 items-center">
+        <div className="relative flex justify-between items-start max-w-2xl mt-4 w-full">
           {["Services", "Date and Time", "Your Details", "Payment"].map(
-            (step, index) => (
-              <div key={step} className="flex items-center space-x-2">
+            (step, index) => {
+              const isActive = index < 2;
+              const showLine = index < 1;
+
+              return (
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm ${
-                    index === 1 ? "bg-orange-700" : "bg-gray-300"
-                  }`}
+                  className="flex flex-col items-center flex-1 relative"
+                  key={step}
                 >
-                  {index + 1}
+                  {showLine && (
+                    <div className="absolute top-4 left-1/2 w-full h-0.5 bg-[#A0522D] z-0" />
+                  )}
+                  <div
+                    className={`z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                      isActive
+                        ? "bg-[#A0522D] text-white"
+                        : "bg-gray-300 text-gray-600"
+                    }`}
+                  >
+                    {index + 1}
+                  </div>
+                  <div
+                    className={`mt-2 text-sm text-center ${
+                      isActive ? "text-[#A0522D]" : "text-gray-600"
+                    }`}
+                  >
+                    {step}
+                  </div>
                 </div>
-                <span
-                  className={`text-sm ${
-                    index === 1 ? "text-orange-700" : "text-gray-600"
-                  }`}
-                >
-                  {step}
-                </span>
-              </div>
-            )
+              );
+            }
           )}
         </div>
 
         {/* Calendar and Time Slot Section */}
         <div className="flex flex-col sm:flex-row sm:items-start gap-8">
           {/* Calendar */}
-          <div className="w-full sm:w-1/2">
-            <h3 className="text-md font-semibold mb-6 mt-5">
-              Select Date and Time
-            </h3>
+          <div className="w-full sm:w-1/2 text-center font-[serif] text-black">
+            <h3 className="text-2xl mb-4">Select Date and Time</h3>
 
-            {/* Month Header with Nav */}
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-sm text-gray-600 font-semibold">
-                {viewDate.format("MMMM YYYY")}
-              </div>
-              <div className="space-x-2">
-                <button
-                  onClick={() => setViewDate(viewDate.subtract(1, "month"))}
-                  className="px-2 py-1 bg-[#A0522D] text-white text-xs rounded"
-                >
-                  ⬅️ Prev
-                </button>
-                <button
-                  onClick={() => setViewDate(viewDate.add(1, "month"))}
-                  className="px-2 py-1 bg-[#A0522D] text-white text-xs rounded"
-                >
-                  Next ➡️
-                </button>
-              </div>
+            {/* Month Header */}
+            <div className="text-xl mb-2">{viewDate.format("MMMM YYYY")}</div>
+
+            {/* Weekdays */}
+            <div className="grid grid-cols-7 text-sm lowercase mb-1">
+              <div className="text-center">mon</div>
+              <div className="text-center">tue</div>
+              <div className="text-center">wed</div>
+              <div className="text-center">thu</div>
+              <div className="text-center">fri</div>
+              <div className="text-center">sat</div>
+              <div className="text-center">sun</div>
             </div>
 
-            {/* Calendar Table */}
-            <div className="grid grid-cols-7 gap-1 text-center text-sm mt-4">
-              {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-                <div key={day} className="text-gray-500 font-medium">
-                  {day}
-                </div>
-              ))}
-
+            {/* Calendar Days */}
+            <div className="grid grid-cols-7 gap-y-2 text-sm">
               {calendarDays.map((day, index) =>
                 day ? (
                   <button
                     key={index}
-                    className={`text-sm text-black w-8 h-8 flex items-center justify-center ${
-                      selectedDate === viewDate.date(day).format("YYYY-MM-DD")
-                        ? "bg-yellow-100 border border-yellow-500 text-yellow-700 rounded"
-                        : "bg-transparent hover:text-orange-700"
-                    }`}
                     onClick={() => handleDateClick(day)}
+                    className={` text-black w-8 h-8 flex items-center justify-center rounded-none font-normal border-0 bg-transparent ml-5 ${
+                      selectedDate === viewDate.date(day).format("YYYY-MM-DD")
+                        ? "text-black bg-gray-200"
+                        : "hover:bg-gray-100"
+                    }`}
                   >
                     {day}
                   </button>
@@ -129,19 +128,25 @@ const AppointmentBooking = () => {
               )}
             </div>
 
-            {/* Your existing form nav buttons (unchanged) */}
-            <div className="flex justify-between mt-4">
-              <button className="bg-[#A0522D] text-white px-4 py-1 rounded">
+            {/* Nav Buttons */}
+            <div className="flex justify-between mt-6 px-2">
+              <button
+                onClick={() => setViewDate(viewDate.subtract(1, "month"))}
+                className="bg-[#A0522D] text-white px-4 py-1 rounded"
+              >
                 Previous
               </button>
-              <button className="bg-[#A0522D] text-white px-8 py-1 rounded">
+              <button
+                onClick={() => setViewDate(viewDate.add(1, "month"))}
+                className="bg-[#A0522D] text-white px-8 py-1 rounded"
+              >
                 Next
               </button>
             </div>
           </div>
 
           {/* Time Slots */}
-          <div className="w-full sm:w-1/2  rounded p-4 bg-white mt-14">
+          <div className="w-full sm:w-1/2 rounded p-4 bg-white mt-14">
             <h3 className="text-md font-semibold mb-2 text-black">
               Available Time Slots - {dayjs(selectedDate).format("MMMM D")}
             </h3>

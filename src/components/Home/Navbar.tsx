@@ -8,7 +8,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full bg-white shadow relative">
+    <nav className="w-full bg-white  relative">
       <div className="flex items-center justify-between py-3 px-6">
         {/* Logo */}
         <div className="w-12 h-12 bg-[#f3e8dc] rounded-full flex items-center justify-center ml-7">
@@ -33,14 +33,6 @@ export default function Navbar() {
             </a>
           </li>
           <li>
-            <a
-              href="/subscription"
-              className="text-gray-900 hover:text-gray-700"
-            >
-              Subscription
-            </a>
-          </li>
-          <li>
             <a href="/services" className="text-gray-900 hover:text-gray-700">
               Services
             </a>
@@ -53,9 +45,11 @@ export default function Navbar() {
         </ul>
 
         {/* Desktop Book Now Button */}
-        <button className="hidden md:block bg-black text-white py-2 px-4 mr-10 rounded-full text-sm hover:bg-gray-800">
-          Book Now
-        </button>
+        <a href="/booking">
+          <button className="hidden md:block bg-black text-white py-2 px-4 mr-10 rounded-full text-sm hover:bg-gray-800">
+            Book Now
+          </button>
+        </a>
 
         {/* Mobile Hamburger Button */}
         <button
@@ -113,15 +107,7 @@ export default function Navbar() {
                 Contact Us
               </a>
             </li>
-            <li className="py-2">
-              <a
-                href="/subscription"
-                className="text-gray-900 hover:text-gray-700 block text-sm"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Subscription
-              </a>
-            </li>
+
             <li className="py-2">
               <a
                 href="/services"

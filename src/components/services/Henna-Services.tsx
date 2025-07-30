@@ -1,5 +1,5 @@
 // components/HeenaServices.jsx
-
+import { useNavigate } from "react-router-dom";
 const services = [
   {
     title: "Henna Art (Hands/Arms)",
@@ -33,6 +33,7 @@ const partyPackage = {
 };
 
 export default function HeenaServices() {
+  const navigate = useNavigate();
   return (
     <div className="bg-[#f8f6e9] py-12 px-6">
       {/* Header */}
@@ -55,32 +56,48 @@ export default function HeenaServices() {
         {services.map((s, i) => (
           <div
             key={i}
-            className="bg-white w-full max-w-md p-6 rounded-3xl shadow-md relative flex flex-col justify-between"
+            className="bg-white w-full max-w-md p-6 rounded-3xl shadow-md flex flex-col justify-between h-full"
           >
-            <div>
-              <h3 className="text-[16px] font-bold">{s.title}</h3>
-              <div className="absolute top-4 right-4 bg-black text-white text-xs px-3 py-1 rounded-full">
+            {/* Top content with price pill */}
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h3 className="text-[16px] font-bold">{s.title}</h3>
+                <p className="text-sm mt-3">{s.description}</p>
+                <p className="text-xs text-gray-600 mt-2">
+                  Duration: {s.duration}
+                </p>
+              </div>
+              <div className="bg-black text-white text-xs px-3 py-1 rounded-full whitespace-nowrap ml-4">
                 {s.priceLabel}
               </div>
-              <p className="text-sm mt-3">{s.description}</p>
-              <p className="text-xs text-gray-600 mt-2">
-                Duration: {s.duration}
-              </p>
             </div>
-            <button className="mt-6 bg-[#a4552c] text-white text-sm px-6 py-2 rounded-full self-end">
-              {s.buttonText}
-            </button>
+
+            {/* Book Now button aligned bottom-right */}
+            <div className="mt-auto flex justify-end">
+              <button
+                onClick={() => navigate("/booking")}
+                className="bg-[#a4552c] text-white text-sm px-6 py-2 rounded-full"
+              >
+                {s.buttonText}
+              </button>
+            </div>
           </div>
         ))}
       </div>
 
       {/* Party Package */}
-      <div className="bg-white max-w-[850px] mx-auto p-6 md:p-8 rounded-3xl shadow-md relative flex flex-col">
-        <h3 className="text-[16px] font-bold mb-2">{partyPackage.title}</h3>
-        <div className="absolute top-4 right-4 bg-black text-white text-xs px-3 py-1 rounded-full">
-          {partyPackage.priceLabel}
+      <div className="bg-white max-w-[850px] mx-auto p-6 md:p-8 rounded-3xl shadow-md flex flex-col justify-between h-full">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h3 className="text-[16px] font-bold mb-2">{partyPackage.title}</h3>
+            <p className="text-sm mb-4">{partyPackage.description}</p>
+          </div>
+          <div className="bg-black text-white text-xs px-3 py-1 rounded-full whitespace-nowrap ml-4 mt-1">
+            {partyPackage.priceLabel}
+          </div>
         </div>
-        <p className="text-sm mb-4">{partyPackage.description}</p>
+
+        {/* Bullet points */}
         <ul className="text-sm space-y-2 mb-6">
           {partyPackage.bulletPoints.map((point, i) => (
             <li key={i} className="flex items-start gap-2">
@@ -88,9 +105,16 @@ export default function HeenaServices() {
             </li>
           ))}
         </ul>
-        <button className="bg-[#a4552c] text-white text-sm px-6 py-2 rounded-full self-end">
-          {partyPackage.buttonText}
-        </button>
+
+        {/* Button bottom-right */}
+        <div className="flex justify-end">
+          <button
+            className="bg-[#a4552c] text-white text-sm px-6 py-2 rounded-full"
+            onClick={() => navigate("/booking")}
+          >
+            {partyPackage.buttonText}
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -20,18 +20,22 @@ export default function Hero() {
               lash services.
             </p>
             <div className="flex gap-4">
-              <button className="bg-black text-white px-6 py-2 rounded-full text-sm hover:bg-gray-800">
-                Book Now
-              </button>
-              <button className="bg-white text-black px-6 py-2 rounded-full text-sm hover:bg-gray-100">
-                Services
-              </button>
+              <a href="/booking">
+                <button className="bg-black text-white px-6 py-2 rounded-full text-sm hover:bg-gray-800">
+                  Book Now
+                </button>
+              </a>
+              <a href="/services">
+                <button className="bg-white text-black px-6 py-2 rounded-full text-sm hover:bg-gray-100">
+                  Services
+                </button>
+              </a>
             </div>
           </div>
         </div>
 
         {/* Yellow Banner */}
-        <div className="bg-[#F2C744] text-black text-sm text-center py-2 font-semibold w-full">
+        <div className="bg-black text-white text-sm text-center py-2 font-semibold w-full">
           Special offer • 10% off for first time clients use code: WELCOME10
           when booking online.
         </div>

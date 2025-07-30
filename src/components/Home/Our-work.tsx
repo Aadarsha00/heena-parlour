@@ -1,18 +1,18 @@
 const images = [
   {
-    src: "/images/lash-application.jpg", // replace with your image paths
+    src: "/pictures/image1.jpg",
     alt: "Lash application",
   },
   {
-    src: "/images/henna-hands.jpg",
+    src: "/pictures/img2.jpg",
     alt: "Henna hands",
   },
   {
-    src: "/images/brow-treatment.jpg",
+    src: "/pictures/img4.jpg",
     alt: "Brow treatment",
   },
   {
-    src: "/images/perfect-brows.jpg",
+    src: "/pictures/services.jpg",
     alt: "Perfect brows",
   },
 ];

@@ -48,27 +48,30 @@ export default function ThreadingServices() {
           {services.map((service, index) => (
             <div
               key={index}
-              className="bg-white p-6 rounded-3xl shadow relative flex flex-col justify-between h-full"
+              className="bg-white p-6 rounded-3xl shadow flex flex-col justify-between h-full"
             >
-              {/* Price pill */}
-              <div className="absolute top-4 right-4 bg-black text-white text-sm px-3 py-1 rounded-full font-semibold">
-                {service.price}
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
+                  <p className="text-gray-700 text-[15px]">
+                    {service.description}
+                  </p>
+                </div>
+                <div className="bg-black text-white text-sm px-3 py-1 rounded-full font-semibold whitespace-nowrap">
+                  {service.price}
+                </div>
               </div>
 
-              <div>
-                <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
-                <p className="text-gray-700 text-[15px] mb-4">
-                  {service.description}
-                </p>
-              </div>
-
-              <div className="flex flex-col items-start mt-auto">
-                <p className="text-sm text-gray-500 mb-3">
+              <div className="mt-auto flex justify-between items-center">
+                <p className="text-sm text-gray-500">
                   Duration: {service.duration}
                 </p>
-                <button className="self-end bg-[#A0522D] text-white text-sm px-5 py-2 rounded-full font-medium">
+                <a
+                  href="/booking"
+                  className="bg-[#A0522D] text-white text-sm px-5 py-2 rounded-full font-medium inline-block text-center"
+                >
                   Book Now
-                </button>
+                </a>
               </div>
             </div>
           ))}
