@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import dayjs from "dayjs";
 
@@ -40,18 +41,20 @@ const AppointmentBooking = () => {
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
 
-  const handleDateClick = (day: number) => {
+  const handleDateClick = (day: any) => {
     const fullDate = viewDate.date(day).format("YYYY-MM-DD");
     setSelectedDate(fullDate);
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-between px-6 pt-12 pb-6 gap-12 font-serif text-[#222] bg-[#fffefc] min-h-screen">
-      <div className="w-full md:w-2/3 space-y-6 mt-10 ml-6">
-        <h2 className="text-3xl font-medium ml-16">Book Your Appointment</h2>
+    <div className="flex flex-col lg:flex-row justify-between px-4 lg:px-6 pt-12 pb-6 gap-6 lg:gap-12 font-serif text-[#222] bg-[#fffefc] min-h-screen overflow-x-hidden">
+      <div className="w-full lg:w-2/3 space-y-6 mt-4 lg:mt-10 ml-0 lg:ml-6">
+        <h2 className="text-2xl lg:text-3xl font-medium ml-7 lg:ml-16">
+          Book Your Appointment
+        </h2>
 
         {/* Step Tracker */}
-        <div className="relative flex justify-between items-start max-w-2xl mt-4 w-full">
+        <div className="relative flex justify-between items-start max-w-full lg:max-w-2xl mt-4 w-full px-2 lg:px-0">
           {["Services", "Date and Time", "Your Details", "Payment"].map(
             (step, index) => {
               const isActive = index < 2;
@@ -66,7 +69,7 @@ const AppointmentBooking = () => {
                     <div className="absolute top-4 left-1/2 w-full h-0.5 bg-[#A0522D] z-0" />
                   )}
                   <div
-                    className={`z-10 w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                    className={`z-10 w-6 h-6 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-xs lg:text-sm font-semibold ${
                       isActive
                         ? "bg-[#A0522D] text-white"
                         : "bg-gray-300 text-gray-600"
@@ -75,7 +78,7 @@ const AppointmentBooking = () => {
                     {index + 1}
                   </div>
                   <div
-                    className={`mt-2 text-sm text-center ${
+                    className={`mt-2 text-xs lg:text-sm text-center ${
                       isActive ? "text-[#A0522D]" : "text-gray-600"
                     }`}
                   >
@@ -88,13 +91,15 @@ const AppointmentBooking = () => {
         </div>
 
         {/* Calendar and Time Slot Section */}
-        <div className="flex flex-col sm:flex-row sm:items-start gap-8">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-6 lg:gap-8">
           {/* Calendar */}
-          <div className="w-full sm:w-1/2 text-center font-[serif] text-black">
-            <h3 className="text-2xl mb-4">Select Date and Time</h3>
+          <div className="w-full lg:w-1/2 text-center font-[serif] text-black">
+            <h3 className="text-xl lg:text-2xl mb-4">Select Date and Time</h3>
 
             {/* Month Header */}
-            <div className="text-xl mb-2">{viewDate.format("MMMM YYYY")}</div>
+            <div className="text-lg lg:text-xl mb-2">
+              {viewDate.format("MMMM YYYY")}
+            </div>
 
             {/* Weekdays */}
             <div className="grid grid-cols-7 text-sm lowercase mb-1">
@@ -108,13 +113,13 @@ const AppointmentBooking = () => {
             </div>
 
             {/* Calendar Days */}
-            <div className="grid grid-cols-7 gap-y-2 text-sm">
+            <div className="grid grid-cols-7 gap-y-2 text-sm justify-items-center">
               {calendarDays.map((day, index) =>
                 day ? (
                   <button
                     key={index}
                     onClick={() => handleDateClick(day)}
-                    className={` text-black w-8 h-8 flex items-center justify-center rounded-none font-normal border-0 bg-transparent ml-5 ${
+                    className={`text-black w-8 h-8 flex items-center justify-center rounded-none font-normal border-0 bg-transparent ${
                       selectedDate === viewDate.date(day).format("YYYY-MM-DD")
                         ? "text-black bg-gray-200"
                         : "hover:bg-gray-100"
@@ -132,13 +137,13 @@ const AppointmentBooking = () => {
             <div className="flex justify-between mt-6 px-2">
               <button
                 onClick={() => setViewDate(viewDate.subtract(1, "month"))}
-                className="bg-[#A0522D] text-white px-4 py-1 rounded"
+                className="bg-[#A0522D] text-white px-3 lg:px-4 py-1 rounded text-sm"
               >
                 Previous
               </button>
               <button
                 onClick={() => setViewDate(viewDate.add(1, "month"))}
-                className="bg-[#A0522D] text-white px-8 py-1 rounded"
+                className="bg-[#A0522D] text-white px-4 lg:px-8 py-1 rounded text-sm"
               >
                 Next
               </button>
@@ -146,15 +151,15 @@ const AppointmentBooking = () => {
           </div>
 
           {/* Time Slots */}
-          <div className="w-full sm:w-1/2 rounded p-4 bg-white mt-14">
+          <div className="w-full lg:w-1/2 rounded p-4 bg-white mt-6 lg:mt-14">
             <h3 className="text-md font-semibold mb-2 text-black">
               Available Time Slots - {dayjs(selectedDate).format("MMMM D")}
             </h3>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
               {timeSlots.map((slot) => (
                 <button
                   key={slot}
-                  className={`px-3 py-2 border text-sm rounded-md ${
+                  className={`px-2 lg:px-3 py-2 border text-xs lg:text-sm rounded-md ${
                     selectedTime === slot
                       ? "bg-yellow-200 border-yellow-400 text-yellow-800"
                       : "border-gray-600 bg-white text-black hover:bg-gray-100"
@@ -170,7 +175,7 @@ const AppointmentBooking = () => {
       </div>
 
       {/* Booking Summary */}
-      <div className="w-full md:w-1/3 bg-yellow-50 p-4 rounded space-y-4">
+      <div className="w-full  lg:w-1/3 bg-yellow-50 p-4 rounded space-y-4">
         <h3 className="text-xl font-medium">Your Booking</h3>
 
         <div>
