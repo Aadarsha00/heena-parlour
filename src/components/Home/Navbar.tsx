@@ -54,7 +54,7 @@ export default function Navbar() {
         {/* Mobile Hamburger Button */}
         <button
           onClick={toggleMenu}
-          className="md:hidden mr-10 p-2 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+          className="md:hidden mr-10 p-2 hover:bg-gray-50 rounded-lg transition-colors duration-200 border-0 bg-transparent"
         >
           <div className="w-5 h-4 flex flex-col justify-between">
             <div

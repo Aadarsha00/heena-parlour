@@ -1,6 +1,9 @@
+import { Link } from "react-router-dom";
+
 export default function LashServices() {
   const services = [
     {
+      id: 1,
       name: "Classic Lashes",
       price: "$85",
       duration: "90 mins",
@@ -8,6 +11,7 @@ export default function LashServices() {
         "Our classic lash extensions add length and a moderate amount of volume to your natural lashes. Each extension is applied to a single natural lash for a subtle, elegant enhancement.",
     },
     {
+      id: 2,
       name: "Hybrid Lashes",
       price: "$95",
       duration: "120 mins",
@@ -15,6 +19,7 @@ export default function LashServices() {
         "A perfect blend of classic and volume techniques, hybrid lashes offer a natural yet dramatic look. This service combines single extensions with handmade volume fans for added texture and dimension.",
     },
     {
+      id: 3,
       name: "Volume Lashes",
       price: "$110",
       duration: "150 mins",
@@ -22,6 +27,7 @@ export default function LashServices() {
         "For a glamorous, full look, our volume lashes involve applying multiple lightweight extensions to each natural lash. The result is dramatically increased volume and density with a fluffy, luxurious effect.",
     },
     {
+      id: 4,
       name: "Lash Fills",
       price: "Starting at$40",
       duration: "60-90 mins",
@@ -29,6 +35,7 @@ export default function LashServices() {
         "Maintain your beautiful lash extensions with our fill service. Recommended every 2–3 weeks, fills replace extensions that have shed naturally with your lash cycle, keeping your look full and fresh.",
     },
     {
+      id: 5,
       name: "Lash Removal",
       price: "$15",
       duration: "30 mins",
@@ -36,6 +43,7 @@ export default function LashServices() {
         "Professional removal of lash extensions using a specialized solution that breaks down the adhesive bond. Our gentle technique ensures your natural lashes remain undamaged in the process.",
     },
     {
+      id: 6,
       name: "Lash Tint",
       price: "$25",
       duration: "30 mins",
@@ -80,12 +88,12 @@ export default function LashServices() {
                 <p className="text-sm text-gray-500">
                   Duration: {service.duration}
                 </p>
-                <a
-                  href="/booking"
+                <Link
+                  to={`/booking/${service.id}`}
                   className="bg-black text-white text-sm px-5 py-2 rounded-full font-medium"
                 >
                   Book Now
-                </a>
+                </Link>
               </div>
             </div>
           ))}
