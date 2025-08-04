@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const images = [
   {
     src: "/pictures/image1.jpg",
@@ -42,12 +44,12 @@ export default function OurWork() {
       </div>
 
       <div className="mt-10">
-        <a
-          href="#"
+        <Link
+          to="/gallery"
           className="inline-flex items-center text-sm font-medium text-black hover:underline"
         >
           View Full Gallery <span className="ml-2">→</span>
-        </a>
+        </Link>
       </div>
     </section>
   );

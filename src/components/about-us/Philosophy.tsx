@@ -20,7 +20,7 @@ const PhilosophySection = () => {
   ];
 
   return (
-    <section className="bg-[#f9f9e9] py-20 px-6">
+    <section className="bg-[#f9f9e9] py-20 px-4 md:px-6 overflow-x-hidden">
       <div className="text-center max-w-3xl mx-auto mb-14">
         <h2 className="text-3xl font-bold mb-4">Our Philosophy</h2>
         <p className="text-lg">
@@ -29,11 +29,11 @@ const PhilosophySection = () => {
         </p>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 justify-items-center">
         {philosophies.map((item, index) => (
           <div
             key={index}
-            className="bg-white rounded-3xl shadow-lg p-10 h-[330px] w-[350px] flex flex-col items-center justify-start text-center"
+            className="bg-white rounded-3xl shadow-lg p-10 h-[330px] w-full max-w-[350px] flex flex-col items-center justify-start text-center"
           >
             {item.icon}
             <h3 className="text-xl font-semibold mb-3">{item.title}</h3>

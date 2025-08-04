@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className="w-full flex flex-col items-center bg-white">
+    <section className="w-full flex flex-col items-center bg-white overflow-x-hidden">
       {/* Hero Image and Overlay */}
       <div className="w-[95%] max-w-[2100px] mx-auto relative overflow-hidden">
         <img
@@ -8,12 +8,13 @@ export default function Hero() {
           alt="Salon Background"
           className="w-full h-[630px] object-cover"
         />
-        <div className="absolute inset-0 bg-[#CEC3AC80]/40 flex flex-col justify-center px-12 text-black">
+        <div className="absolute inset-0 bg-[#CEC3AC80]/40 flex flex-col justify-start md:justify-center pt-52 md:pt-0 px-6 md:px-12 text-black">
           <h1 className="font-display text-[34px] md:text-[50px] font-bold max-w-[540px] leading-tight mb-7 mt-15">
             About Our Salon
           </h1>
           <p className="text-[18px] mb-6 text-gray-950 font-semibold">
-            Discover the story, values, and commitment behind Beautiful <br />
+            Discover the story, values, and commitment behind Beautiful{" "}
+            <br className="hidden md:block" />
             Eyebrow Threading & Henna.
           </p>
           <div className="flex gap-4">
@@ -63,7 +64,7 @@ export default function Hero() {
         </div>
 
         {/* Image Section */}
-        <div className="md:w-1/2 relative flex justify-center items-center max-w-[480px]  ml-10 ">
+        <div className="md:w-1/2 relative flex justify-center items-center max-w-[480px] md:ml-10">
           {/* Top Left Yellow Circle */}
           <div className="absolute -top-6 -left-5 w-16 h-16 bg-yellow-400 rounded-full z-0"></div>
 
@@ -75,7 +76,7 @@ export default function Hero() {
             <img
               src="/pictures/hero.png"
               alt="Salon Interior"
-              className="rounded-lg max-w-[95%] h-auto  object-cover shadow-md mx-auto"
+              className="rounded-lg max-w-[95%] h-auto object-cover shadow-md mx-auto"
             />
           </div>
         </div>

@@ -1,13 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
+import { getServiceById } from "../../api/services.api";
+import type { Service } from "../../interface/services.interface";
+import LoadingScreen from "../../ui/Loading";
 
 const AppointmentBooking = () => {
+  const { serviceId } = useParams<{ serviceId: string }>();
   const [selectedDate, setSelectedDate] = useState(
     dayjs().format("YYYY-MM-DD")
   );
   const [viewDate, setViewDate] = useState(dayjs());
   const [selectedTime, setSelectedTime] = useState("11:00 AM");
+
+  // Fetch service data using React Query
+  const {
+    data: service,
+    isLoading,
+    error,
+  } = useQuery<Service>({
+    queryKey: ["service", serviceId],
+    queryFn: () => getServiceById(Number(serviceId)),
+    enabled: !!serviceId,
+  });
 
   const timeSlots = [
     "9:00 AM",
@@ -22,17 +39,16 @@ const AppointmentBooking = () => {
     "6:00 PM",
   ];
 
-  const services = [
-    { name: "Full Face Threading", price: 35 },
-    { name: "Eyebrow Tinting", price: 20 },
-  ];
-
-  const subTotal = services.reduce((acc, service) => acc + service.price, 0);
-  const bookingDeposit = 0;
+  // Calculate totals based on fetched service data
+  const subTotal = service ? parseFloat(service.price) : 0;
+  const bookingDeposit =
+    service && service.requires_deposit
+      ? parseFloat(service.deposit_amount)
+      : 0;
   const total = subTotal + bookingDeposit;
 
   const daysInMonth = viewDate.daysInMonth();
-  const startDay = viewDate.startOf("month").day(); // 0 = Sunday
+  const startDay = viewDate.startOf("month").day();
   // Fix: Properly calculate leading empty days for Monday start
   const leadingEmptyDays = startDay === 0 ? 6 : startDay - 1;
 
@@ -45,6 +61,47 @@ const AppointmentBooking = () => {
     const fullDate = viewDate.date(day).format("YYYY-MM-DD");
     setSelectedDate(fullDate);
   };
+
+  // Loading state
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#fffefc]">
+        <div className="text-center">
+          <p className="text-red-600 font-serif text-lg">
+            Error loading service: {error as unknown as string}
+          </p>
+          <button
+            onClick={() => window.history.back()}
+            className="mt-4 bg-[#A0522D] text-white px-4 py-2 rounded"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // No service found
+  if (!service) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#fffefc]">
+        <div className="text-center">
+          <p className="text-[#222] font-serif text-lg">Service not found</p>
+          <button
+            onClick={() => window.history.back()}
+            className="mt-4 bg-[#A0522D] text-white px-4 py-2 rounded"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col lg:flex-row justify-between px-4 lg:px-6 pt-12 pb-6 gap-6 lg:gap-12 font-serif text-[#222] bg-[#fffefc] min-h-screen overflow-x-hidden">
@@ -175,17 +232,15 @@ const AppointmentBooking = () => {
       </div>
 
       {/* Booking Summary */}
-      <div className="w-full  lg:w-1/3 bg-yellow-50 p-4 rounded space-y-4">
+      <div className="w-full lg:w-1/3 bg-yellow-50 p-4 rounded space-y-4">
         <h3 className="text-xl font-medium">Your Booking</h3>
 
         <div>
           <p className="font-semibold text-sm mb-2">SELECTED SERVICES</p>
-          {services.map((service) => (
-            <div key={service.name} className="flex justify-between text-sm">
-              <span>{service.name}</span>
-              <span>${service.price}</span>
-            </div>
-          ))}
+          <div className="flex justify-between text-sm">
+            <span>{service.name}</span>
+            <span>${parseFloat(service.price).toFixed(2)}</span>
+          </div>
         </div>
 
         <div>
@@ -201,19 +256,26 @@ const AppointmentBooking = () => {
           <p className="font-semibold text-sm mt-4 mb-1">PRICE SUMMARY</p>
           <div className="flex justify-between text-sm">
             <span>Sub Total</span>
-            <span>${subTotal}</span>
+            <span>${subTotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Booking Deposit</span>
-            <span>${bookingDeposit}</span>
+            <span>${bookingDeposit.toFixed(2)}</span>
           </div>
           <div className="flex justify-between font-semibold">
             <span>Total</span>
-            <span>${total}</span>
+            <span>${total.toFixed(2)}</span>
           </div>
-          <p className="text-xs italic mt-1">
-            *$50 deposit required now, remaining balance due at appointment
-          </p>
+          {service.requires_deposit && bookingDeposit > 0 ? (
+            <p className="text-xs italic mt-1">
+              *${bookingDeposit.toFixed(2)} deposit required now, remaining
+              balance due at appointment
+            </p>
+          ) : (
+            <p className="text-xs italic mt-1">
+              *Full payment due at appointment
+            </p>
+          )}
         </div>
 
         <div className="bg-white p-3 rounded text-sm">

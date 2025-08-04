@@ -45,7 +45,7 @@ export default function Navbar() {
         </ul>
 
         {/* Desktop Book Now Button */}
-        <a href="/booking">
+        <a href="/services">
           <button className="hidden md:block bg-black text-white py-2 px-4 mr-10 rounded-full text-sm hover:bg-gray-800">
             Book Now
           </button>

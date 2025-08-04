@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createAppointment } from "../../api/booking.api";
+import { createAppointment } from "../../api/appointment.api";
 
 interface AppointmentBookingProps {
   onAppointmentCreated: (appointmentId: number) => void;

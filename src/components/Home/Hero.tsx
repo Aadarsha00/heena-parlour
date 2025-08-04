@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className="w-full flex justify-center bg-white ">
+    <section className="w-full flex justify-center bg-white overflow-x-hidden">
       <div className="w-[95%] max-w-[2100px] mx-auto">
         {/* Hero Image and Overlay */}
         <div className="relative overflow-hidden">
@@ -9,25 +9,29 @@ export default function Hero() {
             alt="Salon Background"
             className="w-full h-[610px] object-cover"
           />
-          <div className="absolute inset-0 bg-[#CEC3AC80]/40 flex flex-col justify-center px-12 text-black">
-            <h1 className="font-display text-[34px] md:text-[50px] font-bold max-w-[540px] leading-tight mb-4 mt-6 ">
-              Elegance In Every
-              <br /> Thread. Art In Every
-              <br /> Stroke.
+          <div className="absolute inset-0 bg-[#CEC3AC80]/40 flex flex-col justify-start md:justify-center pt-28 md:pt-0 px-6 md:px-12 text-black">
+            <h1 className="font-display text-[34px] md:text-[50px] font-bold max-w-[540px] leading-tight mb-4 mt-6">
+              <span className="block md:hidden">
+                Elegance In Every
+                <br />
+                Thread. Art In
+                <br />
+                Every Stroke.
+              </span>
+              <span className="hidden md:block">
+                Elegance In Every
+                <br /> Thread. Art In Every
+                <br /> Stroke.
+              </span>
             </h1>
-            <p className="text-[18px] max-w-[480px] mb-6  text-gray-950 font-semibold">
+            <p className="text-[18px] max-w-[480px] mb-6 text-gray-950 font-semibold">
               Experience the art of beauty with our expert threading, henna and
               lash services.
             </p>
             <div className="flex gap-4">
-              <a href="/booking">
+              <a href="/services">
                 <button className="bg-black text-white px-6 py-2 rounded-full text-sm hover:bg-gray-800">
                   Book Now
-                </button>
-              </a>
-              <a href="/services">
-                <button className="bg-white text-black px-6 py-2 rounded-full text-sm hover:bg-gray-100">
-                  Services
                 </button>
               </a>
             </div>
