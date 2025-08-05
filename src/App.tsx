@@ -12,6 +12,10 @@ import ProtectedRoute from "./context/Protected-Route";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Toaster } from "react-hot-toast";
+import AppointmentDetailsForm from "./components/booking/Appoinntment-Detail";
+import { MyAppointment } from "./pages/My-Appointment";
+import { Blog } from "./pages/Blog";
+import BlogDetailPage from "./components/Blogs/Blog-Deatil";
 
 function App() {
   return (
@@ -32,6 +36,20 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/booking/:serviceId/detail"
+            element={<AppointmentDetailsForm />}
+          />
+          <Route
+            path="/my-appointment"
+            element={
+              <ProtectedRoute>
+                <MyAppointment />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogDetailPage />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

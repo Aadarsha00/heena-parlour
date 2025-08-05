@@ -4,16 +4,16 @@ export default function ServicesHero() {
       {/* Hero Image and Overlay */}
       <div className="w-[95%] max-w-[2100px] mx-auto relative overflow-hidden">
         <img
-          src="/pictures/services.jpg"
+          src="/pictures/services.png"
           alt="Salon Background"
           className="w-full h-[620px] object-cover"
         />
         {/* Overlay Text */}
-        <div className="absolute inset-0 bg-[#CEC3AC80]/40 flex flex-col justify-center px-12 text-black">
-          <h1 className="font-display text-[40px] md:text-[56px] font-bold mb-4">
+        <div className="absolute inset-0 bg-black/30 flex flex-col justify-center px-12 text-black">
+          <h1 className="font-display text-[40px] md:text-[56px] font-bold mb-4 text-white ml-7 mt-12">
             Our Services
           </h1>
-          <p className="text-[18px] max-w-[600px] font-medium">
+          <p className="text-[18px] max-w-[600px] font-medium text-white ml-7">
             Discover our range of professional beauty services, with transparent
             pricing and detailed descriptions to help you make the right choice.
           </p>

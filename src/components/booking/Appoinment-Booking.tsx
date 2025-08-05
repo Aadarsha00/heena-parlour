@@ -1,14 +1,37 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { getServiceById } from "../../api/services.api";
+import type { Appointment } from "../../interface/appointment.interface";
+import api from "../axios/api.axios";
 import type { Service } from "../../interface/services.interface";
-import LoadingScreen from "../../ui/Loading";
+import { getServiceById } from "../../api/services.api";
+
+// API function to get appointments for a specific date
+const getAppointmentsForDate = async (date: string): Promise<Appointment[]> => {
+  try {
+    // Using your actual API endpoint structure
+    const response = await api.get(`/appointments/?appointment_date=${date}`);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error fetching appointments:", error);
+    throw error?.response?.data?.message || "Failed to fetch appointments";
+  }
+};
+
+// Helper function to convert 24-hour time to 12-hour format
+const convert24to12 = (time24: string): string => {
+  const [hours, minutes] = time24.split(":");
+  const hour = parseInt(hours, 10);
+  const period = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+  return `${hour12}:${minutes} ${period}`;
+};
 
 const AppointmentBooking = () => {
   const { serviceId } = useParams<{ serviceId: string }>();
+  const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(
     dayjs().format("YYYY-MM-DD")
   );
@@ -18,13 +41,67 @@ const AppointmentBooking = () => {
   // Fetch service data using React Query
   const {
     data: service,
-    isLoading,
-    error,
+    isLoading: serviceLoading,
+    error: serviceError,
   } = useQuery<Service>({
     queryKey: ["service", serviceId],
     queryFn: () => getServiceById(Number(serviceId)),
     enabled: !!serviceId,
   });
+
+  // Fetch appointments for the selected date
+  const {
+    data: appointments = [],
+    isLoading: appointmentsLoading,
+    error: appointmentsError,
+  } = useQuery<Appointment[]>({
+    queryKey: ["appointments", selectedDate],
+    queryFn: () => getAppointmentsForDate(selectedDate),
+    enabled: !!selectedDate,
+    // Optional: Add some caching and refetch options
+    staleTime: 2 * 60 * 1000, // 2 minutes (shorter since appointments change frequently)
+    // Add error handling and data transformation
+    select: (data) => {
+      // Handle different API response formats
+      if (Array.isArray(data)) {
+        return data;
+      }
+      // If API returns paginated response like { results: [...] }
+      if (data && typeof data === "object" && "results" in data) {
+        const results = (data as any).results || [];
+        return results;
+      }
+      // If API returns object with appointments key
+      if (data && typeof data === "object" && "appointments" in data) {
+        const appointments = (data as any).appointments || [];
+        return appointments;
+      }
+      return [];
+    },
+  });
+
+  // We also need to fetch services for the booked appointments to get their durations
+  const bookedServiceIds = Array.isArray(appointments)
+    ? appointments.map((apt) => apt.service)
+    : [];
+  const { data: bookedServices = [], isLoading: bookedServicesLoading } =
+    useQuery<Service[]>({
+      queryKey: ["bookedServices", bookedServiceIds],
+      queryFn: async () => {
+        if (bookedServiceIds.length === 0) return [];
+        try {
+          // Fetch all services for the booked appointments
+          const servicePromises = bookedServiceIds.map((id) =>
+            getServiceById(id)
+          );
+          return Promise.all(servicePromises);
+        } catch (error) {
+          console.error("Error fetching booked services:", error);
+          return [];
+        }
+      },
+      enabled: bookedServiceIds.length > 0,
+    });
 
   const timeSlots = [
     "9:00 AM",
@@ -39,6 +116,94 @@ const AppointmentBooking = () => {
     "6:00 PM",
   ];
 
+  // Helper function to convert time string to minutes
+  const timeToMinutes = (timeStr: string): number => {
+    const [time, period] = timeStr.split(" ");
+    const [hours, minutes] = time.split(":").map(Number);
+    let totalMinutes = hours * 60 + minutes;
+
+    if (period === "PM" && hours !== 12) {
+      totalMinutes += 12 * 60;
+    } else if (period === "AM" && hours === 12) {
+      totalMinutes = minutes;
+    }
+
+    return totalMinutes;
+  };
+
+  // Helper function to convert minutes back to time string
+  const minutesToTime = (minutes: number): string => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    const period = hours >= 12 ? "PM" : "AM";
+    const displayHours = hours > 12 ? hours - 12 : hours === 0 ? 12 : hours;
+    return `${displayHours}:${mins.toString().padStart(2, "0")} ${period}`;
+  };
+
+  // Calculate available time slots
+  const availableTimeSlots = useMemo(() => {
+    if (!service || !Array.isArray(appointments) || bookedServicesLoading)
+      return timeSlots;
+
+    const serviceDuration = service.duration_minutes;
+    const blockedSlots = new Set<string>();
+
+    // Create a map of service ID to service object for quick lookup
+    const serviceMap = new Map<number, Service>();
+    bookedServices.forEach((svc) => serviceMap.set(svc.id, svc));
+
+    // For each existing appointment, calculate which time slots are blocked
+    appointments.forEach((appointment) => {
+      const bookedService = serviceMap.get(appointment.service);
+      if (!bookedService) return; // Skip if service data not available
+
+      try {
+        // Convert 24-hour time to 12-hour format for comparison
+        const appointmentTime12 = convert24to12(appointment.appointment_time);
+        const appointmentStartMinutes = timeToMinutes(appointmentTime12);
+        const appointmentEndMinutes =
+          appointmentStartMinutes + bookedService.duration_minutes;
+
+        // Block all time slots that would conflict with this appointment
+        timeSlots.forEach((slot) => {
+          const slotStartMinutes = timeToMinutes(slot);
+          const slotEndMinutes = slotStartMinutes + serviceDuration;
+
+          // Check if there's any overlap between the new service and existing appointment
+          const hasOverlap =
+            // New service starts during existing appointment
+            (slotStartMinutes >= appointmentStartMinutes &&
+              slotStartMinutes < appointmentEndMinutes) ||
+            // New service ends during existing appointment
+            (slotEndMinutes > appointmentStartMinutes &&
+              slotEndMinutes <= appointmentEndMinutes) ||
+            // New service completely encompasses existing appointment
+            (slotStartMinutes <= appointmentStartMinutes &&
+              slotEndMinutes >= appointmentEndMinutes);
+
+          if (hasOverlap) {
+            blockedSlots.add(slot);
+          }
+        });
+      } catch (error) {
+        console.error("Error processing appointment time:", appointment, error);
+      }
+    });
+
+    // Also block slots that would run past business hours (6 PM end time)
+    const businessEndTime = timeToMinutes("6:00 PM");
+    timeSlots.forEach((slot) => {
+      const slotStartMinutes = timeToMinutes(slot);
+      const slotEndMinutes = slotStartMinutes + serviceDuration;
+
+      if (slotEndMinutes > businessEndTime) {
+        blockedSlots.add(slot);
+      }
+    });
+
+    return timeSlots.filter((slot) => !blockedSlots.has(slot));
+  }, [service, appointments, bookedServices, bookedServicesLoading, timeSlots]);
+
   // Calculate totals based on fetched service data
   const subTotal = service ? parseFloat(service.price) : 0;
   const bookingDeposit =
@@ -48,7 +213,7 @@ const AppointmentBooking = () => {
   const total = subTotal + bookingDeposit;
 
   const daysInMonth = viewDate.daysInMonth();
-  const startDay = viewDate.startOf("month").day();
+  const startDay = viewDate.startOf("month").day(); // 0 = Sunday
   // Fix: Properly calculate leading empty days for Monday start
   const leadingEmptyDays = startDay === 0 ? 6 : startDay - 1;
 
@@ -62,18 +227,72 @@ const AppointmentBooking = () => {
     setSelectedDate(fullDate);
   };
 
+  // Helper function to convert 12-hour time to 24-hour format
+  const convert12to24 = (time12: string): string => {
+    const [time, period] = time12.split(" ");
+    const [hours, minutes] = time.split(":");
+    let hour = parseInt(hours, 10);
+
+    if (period === "PM" && hour !== 12) {
+      hour += 12;
+    } else if (period === "AM" && hour === 12) {
+      hour = 0;
+    }
+
+    return `${hour.toString().padStart(2, "0")}:${minutes}:00`;
+  };
+
+  // Handle navigation to details page
+  const handleNextClick = () => {
+    if (!selectedTime || !selectedDate || availableTimeSlots.length === 0) {
+      alert("Please select a date and time slot before proceeding.");
+      return;
+    }
+
+    // Convert time to 24-hour format for the API
+    const appointmentTime24 = convert12to24(selectedTime);
+
+    // Navigate to details page with appointment data
+    navigate("detail", {
+      state: {
+        serviceId: Number(serviceId),
+        appointmentDate: selectedDate,
+        appointmentTime: appointmentTime24,
+        selectedTimeDisplay: selectedTime,
+        service: service,
+      },
+    });
+  };
+
   // Loading state
-  if (isLoading) {
-    return <LoadingScreen />;
+  if (serviceLoading || appointmentsLoading || bookedServicesLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#fffefc]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#A0522D]"></div>
+          <p className="mt-4 text-[#222] font-serif">
+            {serviceLoading
+              ? "Loading service details..."
+              : appointmentsLoading
+              ? "Loading appointments..."
+              : "Loading available time slots..."}
+          </p>
+        </div>
+      </div>
+    );
   }
 
   // Error state
-  if (error) {
+  if (serviceError || appointmentsError) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#fffefc]">
         <div className="text-center">
           <p className="text-red-600 font-serif text-lg">
-            Error loading service: {error as unknown as string}
+            {serviceError
+              ? `Error loading service: ${serviceError as unknown as string}`
+              : `Error loading appointments: ${
+                  appointmentsError as unknown as unknown as string
+                }`}
           </p>
           <button
             onClick={() => window.history.back()}
@@ -212,22 +431,62 @@ const AppointmentBooking = () => {
             <h3 className="text-md font-semibold mb-2 text-black">
               Available Time Slots - {dayjs(selectedDate).format("MMMM D")}
             </h3>
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
-              {timeSlots.map((slot) => (
-                <button
-                  key={slot}
-                  className={`px-2 lg:px-3 py-2 border text-xs lg:text-sm rounded-md ${
-                    selectedTime === slot
-                      ? "bg-yellow-200 border-yellow-400 text-yellow-800"
-                      : "border-gray-600 bg-white text-black hover:bg-gray-100"
-                  }`}
-                  onClick={() => setSelectedTime(slot)}
-                >
-                  {slot}
-                </button>
-              ))}
-            </div>
+            <p className="text-xs text-gray-600 mb-3">
+              Service duration: {service.duration_minutes} minutes
+            </p>
+
+            {availableTimeSlots.length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-gray-600 text-sm">
+                  No available time slots for this date
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Please select a different date
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                {availableTimeSlots.map((slot) => (
+                  <button
+                    key={slot}
+                    className={`px-2 lg:px-3 py-2 border text-xs lg:text-sm rounded-md ${
+                      selectedTime === slot
+                        ? "bg-yellow-200 border-yellow-400 text-yellow-800"
+                        : "border-gray-600 bg-white text-black hover:bg-gray-100"
+                    }`}
+                    onClick={() => setSelectedTime(slot)}
+                  >
+                    {slot}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {Array.isArray(appointments) &&
+              timeSlots.length - availableTimeSlots.length > 0 && (
+                <p className="text-xs text-gray-500 mt-2">
+                  {timeSlots.length - availableTimeSlots.length} time slot(s)
+                  unavailable due to existing bookings
+                </p>
+              )}
           </div>
+        </div>
+
+        {/* Next Button */}
+        <div className="flex justify-end mt-6">
+          <button
+            onClick={handleNextClick}
+            disabled={
+              !selectedTime || !selectedDate || availableTimeSlots.length === 0
+            }
+            className={`px-8 py-2 rounded text-white font-medium ${
+              selectedTime && selectedDate && availableTimeSlots.length > 0
+                ? "bg-[#A0522D] hover:bg-[#8B4513] cursor-pointer"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+          >
+            Next
+          </button>
         </div>
       </div>
 

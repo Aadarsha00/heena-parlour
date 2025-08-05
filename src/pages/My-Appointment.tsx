@@ -1,12 +1,12 @@
 import Footer from "../components/Home/footer-home";
 import Navbar from "../components/Home/Navbar";
-import PaymentPage from "../components/payment/Payment-Page";
+import AppointmentDashboard from "../components/My-Appointments/Appointment-Dashboard";
 
-export const Payment: React.FC = () => {
+export const MyAppointment: React.FC = () => {
   return (
     <div>
       <Navbar />
-      <PaymentPage />
+      <AppointmentDashboard />
       <Footer />
     </div>
   );

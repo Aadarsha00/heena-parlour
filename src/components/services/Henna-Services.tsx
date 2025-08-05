@@ -27,7 +27,7 @@ export default function HennaServices() {
   );
 
   const handleBookNow = (e: React.MouseEvent, serviceId: number) => {
-    e.preventDefault(); // Prevent default Link navigation
+    e.preventDefault();
 
     if (isAuthenticated) {
       navigate(`/booking/${serviceId}`);

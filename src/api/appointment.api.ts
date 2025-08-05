@@ -2,6 +2,7 @@
 
 import api from "../components/axios/api.axios";
 import type {
+  Appointment,
   AppointmentFilters,
   CreateAppointmentData,
   UpdateAppointmentData,
@@ -124,5 +125,17 @@ export const getPaymentPendingAppointments = async () => {
       error?.response?.data?.message ||
       "Failed to get payment pending appointments"
     );
+  }
+};
+
+//get appointment through date
+export const getAppointmentsForDate = async (
+  date: string
+): Promise<Appointment[]> => {
+  try {
+    const response = await api.get(`/appointments/?appointment_date=${date}`);
+    return response.data;
+  } catch (error: any) {
+    throw error?.response?.data?.message || "Failed to fetch appointments";
   }
 };

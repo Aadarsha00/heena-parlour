@@ -1,30 +1,39 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-refresh/only-export-components */
+// src/context/AuthContext.tsx
 import { createContext, useEffect, useState } from "react";
 
-const AuthContext = createContext<{
+type AuthContextType = {
   isAuthenticated: boolean;
   setAuthenticated: (value: boolean) => void;
   isLoading: boolean;
   refreshAuth: () => void;
-}>({
+};
+
+const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   setAuthenticated: () => {},
   isLoading: true,
   refreshAuth: () => {},
 });
 
+let authContextRef: {
+  setAuthenticated?: (value: boolean) => void;
+  refreshAuth?: () => void;
+} = {};
+
+export const setAuthContextRef = (ref: typeof authContextRef) => {
+  authContextRef = ref;
+};
+
+export const getAuthContextRef = () => authContextRef;
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const checkAuthStatus = () => {
-    const token = localStorage.getItem("access"); // Back to "access" to match backend
-    console.log("AuthProvider - Raw token:", token);
-    console.log("AuthProvider - Token found:", !!token);
-    console.log(
-      "AuthProvider - All localStorage keys:",
-      Object.keys(localStorage)
-    );
-    console.log("AuthProvider - Setting authenticated to:", !!token);
+    const token = localStorage.getItem("access");
     setAuthenticated(!!token);
     setIsLoading(false);
   };
@@ -32,16 +41,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     checkAuthStatus();
 
-    // Listen for storage changes (including from the same tab)
     const handleStorageChange = () => {
-      console.log("Storage changed, rechecking auth...");
       checkAuthStatus();
     };
 
-    // Listen for localStorage changes
     window.addEventListener("storage", handleStorageChange);
-
-    // Custom event listener for same-tab storage changes
     window.addEventListener("localStorageChange", handleStorageChange);
 
     return () => {
@@ -50,15 +54,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []);
 
+  useEffect(() => {
+    // Register the context methods globally
+    setAuthContextRef({
+      setAuthenticated: setAuthenticatedWrapper,
+      refreshAuth,
+    });
+  }, []);
+
   const refreshAuth = () => {
-    console.log("Manually refreshing auth state");
     checkAuthStatus();
   };
 
   const setAuthenticatedWrapper = (value: boolean) => {
     setAuthenticated(value);
     if (!value) {
-      // Clear tokens when logging out - match backend keys
       localStorage.removeItem("access");
       localStorage.removeItem("refresh");
     }
