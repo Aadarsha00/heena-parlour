@@ -48,7 +48,7 @@ export default function Hero() {
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
           {/* Text Left */}
           <div className="text-black py-40 px-8">
-            <h2 className="font-garamond text-[30px] font-bold mb-3 leading-snug">
+            <h2 className="font-display text-[30px] font-bold mb-3 leading-snug">
               Welcome to Beautiful <br /> Eyebrow Threading & Henna
             </h2>
             <p className="text-gray-700 mb-4 max-w-md text-sm leading-relaxed">

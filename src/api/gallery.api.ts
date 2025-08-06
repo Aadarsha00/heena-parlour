@@ -2,7 +2,6 @@
 import api from "../components/axios/api.axios";
 import type {
   GalleryCategory,
-  GalleryImage,
   GalleryResponse,
 } from "../interface/gallery.interface";
 
@@ -31,9 +30,7 @@ export const getGalleryImagesWithFilters = async (params: {
 };
 
 // Get gallery image details by ID
-export const getGalleryImageById = async (
-  id: number
-): Promise<GalleryImage> => {
+export const getGalleryImageById = async (id: number): Promise<any> => {
   try {
     const response = await api.get(`/gallery/${id}/`);
     return response.data;

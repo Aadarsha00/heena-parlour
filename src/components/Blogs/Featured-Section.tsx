@@ -14,12 +14,10 @@ const FeaturedSection = () => {
     queryFn: getFeaturedBlogPosts,
   });
 
-  // Handle navigation to blog post
   const handleReadMore = (slug: string) => {
     navigate(`/blog/${slug}`);
   };
 
-  // Format date helper
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -31,11 +29,11 @@ const FeaturedSection = () => {
 
   return (
     <section className="bg-white">
-      {/* Header with full-width background */}
-      <div className="bg-[#FBF5C7] w-full ">
+      {/* Header */}
+      <div className="bg-[#FBF5C7] w-full">
         <div className="max-w-7xl mx-auto px-6 py-10 font-garamond">
           <p className="text-sm text-[#9D8644] mb-1 text-left">Home/Blog</p>
-          <h1 className="text-3xl font-serif text-black text-left font-garamond">
+          <h1 className="text-3xl font-serif text-black text-left">
             Beauty Tips & Expert Advice
           </h1>
           <p className="text-sm text-gray-700 mt-2 max-w-lg text-left">
@@ -52,10 +50,10 @@ const FeaturedSection = () => {
         </div>
       </div>
 
-      {/* Featured Posts with full-width background */}
+      {/* Featured Posts */}
       <div className="bg-[#F5F3E3] w-full -mt-7">
-        <div className="max-w-7xl mx-auto px-6 py-10 font-garamond ">
-          <h2 className="text-3xl font-serif mb-6 text-left font-garamond -mt-8">
+        <div className="max-w-7xl mx-auto px-6 py-10 font-garamond">
+          <h2 className="text-3xl font-serif mb-6 text-left -mt-8">
             Featured Posts
           </h2>
 
@@ -76,16 +74,14 @@ const FeaturedSection = () => {
           )}
 
           {featuredPosts && featuredPosts.length > 0 && (
-            <div className="flex flex-col md:flex-row gap-6 ">
-              {/* First Card (left) - Always displayed if there's at least one post */}
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* First Card */}
               <div
-                className={`flex ${
-                  featuredPosts.length === 1
-                    ? "w-full"
-                    : "w-[55%] -ml-5 font-garamond"
-                } h-[420px] bg-white rounded-xl shadow overflow-hidden`}
+                className={`flex flex-col sm:flex-row ${
+                  featuredPosts.length === 1 ? "w-full" : "md:w-[55%]"
+                } h-auto bg-white rounded-xl shadow overflow-hidden`}
               >
-                <div className="w-1/2 h-full">
+                <div className="sm:w-1/2 w-full h-64 sm:h-auto">
                   <img
                     src={
                       featuredPosts[0].featured_image_url || "pictures/img4.jpg"
@@ -97,19 +93,19 @@ const FeaturedSection = () => {
                     }}
                   />
                 </div>
-                <div className="w-1/2 p-5 flex flex-col justify-between">
+                <div className="sm:w-1/2 w-full p-5 flex flex-col justify-between">
                   <div>
                     <span className="bg-[#E5C862] text-xs font-semibold px-2 py-1 rounded-full text-gray-800 inline-block mb-2">
                       {featuredPosts[0].category}
                     </span>
-                    <h3 className="text-2xl font-serif mb-1 font-garamond">
+                    <h3 className="text-2xl font-serif mb-1">
                       {featuredPosts[0].title}
                     </h3>
                     <p className="text-md text-gray-700 mt-3">
                       {featuredPosts[0].excerpt}
                     </p>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-gray-600">
+                  <div className="flex items-center justify-between text-xs text-gray-600 mt-4">
                     <span>
                       Admin
                       <br />
@@ -125,10 +121,10 @@ const FeaturedSection = () => {
                 </div>
               </div>
 
-              {/* Second Card (right) - Only displayed if there are 2 or more posts */}
+              {/* Second Card */}
               {featuredPosts.length > 1 && (
-                <div className="w-[40%] h-[420px] bg-white rounded-xl shadow overflow-hidden ml-auto flex flex-col">
-                  <div className="h-[50%] w-full">
+                <div className="w-full md:w-[40%] bg-white rounded-xl shadow overflow-hidden flex flex-col">
+                  <div className="h-64 md:h-[210px] w-full">
                     <img
                       src={
                         featuredPosts[1].featured_image_url ||
@@ -147,14 +143,14 @@ const FeaturedSection = () => {
                       <span className="bg-[#E5C862] text-xs font-semibold px-2 py-1 rounded-full text-gray-800 inline-block mb-2">
                         {featuredPosts[1].category}
                       </span>
-                      <h3 className="text-2xl font-serif mb-1 font-garamond">
+                      <h3 className="text-2xl font-serif mb-1">
                         {featuredPosts[1].title}
                       </h3>
-                      <p className="text-sm text-gray-700 font-garamond">
+                      <p className="text-sm text-gray-700">
                         {featuredPosts[1].excerpt}
                       </p>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-gray-600">
+                    <div className="flex items-center justify-between text-xs text-gray-600 mt-4">
                       <span>
                         Admin
                         <br />

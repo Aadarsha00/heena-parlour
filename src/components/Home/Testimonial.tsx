@@ -22,7 +22,9 @@ const testimonials = [
 export default function ClientTestimonials() {
   return (
     <section className="bg-white py-16 px-6 lg:px-20 text-center">
-      <h2 className="text-3xl font-semibold mb-2">Client Testimonials</h2>
+      <h2 className="text-3xl font-semibold mb-2 font-display">
+        Client Testimonials
+      </h2>
       <p className="text-gray-600 mb-12">
         Browse our gallery to see examples of our threading, henna, and lash
         services.

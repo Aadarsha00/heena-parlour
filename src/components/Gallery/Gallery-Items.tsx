@@ -10,28 +10,25 @@ import {
 } from "../../api/gallery.api";
 
 export default function GalleryItems() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
-
-  // Map your API categories to display names
   const categoryMap: CategoryMap = {
     All: "All",
-    threading: "Eyebrow Threading",
-    lashes: "Lash Services",
-    hair: "Hair Services",
-    party: "Party & Events",
+    brows: "Eye Brows",
+    henna: "Henna",
+    lashes: "Lashes",
+    salon: "Salon",
   };
 
   const categories = Object.values(categoryMap);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  // Get the API category key from display name
+  // Map display label back to API key
   const getApiCategory = (displayName: string): GalleryCategory | undefined => {
     const entry = Object.entries(categoryMap).find(
-      ([display]) => display === displayName
+      ([, label]) => label === displayName
     );
     return entry ? (entry[0] as GalleryCategory) : undefined;
   };
 
-  // Query for gallery images with filtering
   const {
     data: galleryData,
     isLoading,
@@ -49,30 +46,37 @@ export default function GalleryItems() {
         });
       }
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   const galleryItems = galleryData?.results || [];
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <div className="bg-[#F5F3E3] min-h-screen py-14 px-6 font-serif">
-        <h2 className="text-4xl font-bold text-center mb-2">Our Gallery</h2>
-        <p className="text-center text-sm text-gray-700 mb-8">
-          Explore Our Portfolio Of Beautiful Transformations
-        </p>
+  return (
+    <div className="bg-[#F5F3E3] min-h-screen py-14 px-6 font-serif">
+      <h2 className="text-4xl font-bold text-center mb-2">Our Gallery</h2>
+      <p className="text-center text-sm text-gray-700 mb-8">
+        Explore Our Portfolio Of Beautiful Transformations
+      </p>
 
-        {/* Loading skeleton */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className="w-32 h-8 bg-gray-200 rounded-full animate-pulse"
-            ></div>
-          ))}
-        </div>
+      {/* Category Buttons */}
+      <div className="flex flex-wrap justify-center gap-3 mb-10">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`px-5 py-2 rounded-full text-sm transition-colors ${
+              selectedCategory === cat
+                ? "bg-black text-white"
+                : "bg-white text-black border border-black hover:bg-gray-50"
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
 
+      {/* Loading State */}
+      {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="bg-white shadow-sm">
@@ -84,19 +88,10 @@ export default function GalleryItems() {
             </div>
           ))}
         </div>
-      </div>
-    );
-  }
+      )}
 
-  // Error state
-  if (isError) {
-    return (
-      <div className="bg-[#F5F3E3] min-h-screen py-14 px-6 font-serif">
-        <h2 className="text-4xl font-bold text-center mb-2">Our Gallery</h2>
-        <p className="text-center text-sm text-gray-700 mb-8">
-          Explore Our Portfolio Of Beautiful Transformations
-        </p>
-
+      {/* Error State */}
+      {isError && (
         <div className="flex flex-col items-center justify-center py-20">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
             <h3 className="text-lg font-semibold text-red-800 mb-2">
@@ -115,105 +110,64 @@ export default function GalleryItems() {
             </button>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-[#F5F3E3] min-h-screen py-14 px-6 font-serif">
-      <h2 className="text-4xl font-bold text-center mb-2">Our Gallery</h2>
-      <p className="text-center text-sm text-gray-700 mb-8">
-        Explore Our Portfolio Of Beautiful Transformations
-      </p>
-
-      {/* Filter Buttons */}
-      <div className="flex flex-wrap justify-center gap-3 mb-10">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-5 py-2 rounded-full text-sm transition-colors ${
-              selectedCategory === cat
-                ? "bg-black text-white"
-                : "bg-white text-black border border-black hover:bg-gray-50"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-
-      {/* Gallery Grid */}
-      {galleryItems.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-gray-600 text-lg">
-            No images found for this category.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {galleryItems.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white shadow-sm hover:shadow-md transition-shadow"
-            >
-              {/* Construct full URL if needed */}
-              <img
-                src={
-                  item.image_url.startsWith("http")
-                    ? item.image_url
-                    : `https://api-beautiful-eyebrow.ctrlbits.xyz${item.image_url}`
-                }
-                alt={item.caption}
-                className="w-full h-48 object-cover"
-                loading="lazy"
-                onLoad={() => {
-                  console.log("✅ Image loaded successfully:", item.image_url);
-                }}
-                onError={(e) => {
-                  console.log("❌ Failed to load image:", item.image_url);
-                  console.log(
-                    "❌ Constructed URL:",
-                    item.image_url.startsWith("http")
-                      ? item.image_url
-                      : `https://api-beautiful-eyebrow.ctrlbits.xyz${item.image_url}`
-                  );
-                  console.log("Full item data:", item);
-                  // Create a more subtle placeholder
-                  const placeholderSvg = `data:image/svg+xml;base64,${btoa(`
-                    <svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
-                      <rect width="400" height="400" fill="#f8f9fa"/>
-                      <circle cx="200" cy="180" r="20" fill="#dee2e6"/>
-                      <rect x="185" y="165" width="30" height="20" rx="2" fill="#f8f9fa"/>
-                      <rect x="190" y="170" width="20" height="2" fill="#6c757d"/>
-                      <rect x="190" y="175" width="15" height="2" fill="#6c757d"/>
-                      <text x="200" y="220" font-family="Arial, sans-serif" font-size="12" fill="#6c757d" text-anchor="middle">Loading...</text>
-                    </svg>
-                  `)}`;
-                  e.currentTarget.src = placeholderSvg;
-                }}
-              />
-              <div className="p-3 border-t bg-gray-100">
-                <h3 className="text-sm font-semibold">{item.caption}</h3>
-                <p className="text-xs text-gray-600 mt-1 capitalize">
-                  {item.category}
-                </p>
-                {item.is_featured && (
-                  <span className="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
-                    Featured
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
       )}
 
-      {/* Results count */}
-      {galleryData && (
-        <div className="text-center mt-8 text-sm text-gray-600">
-          Showing {galleryItems.length} of {galleryData.count} images
-        </div>
+      {/* Gallery Grid */}
+      {!isLoading && !isError && (
+        <>
+          {galleryItems.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-gray-600 text-lg">
+                No images found for this category.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {galleryItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-white shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <img
+                    src={
+                      item.image_url.startsWith("http")
+                        ? item.image_url
+                        : `https://api-beautiful-eyebrow.ctrlbits.xyz${item.image_url}`
+                    }
+                    alt={item.caption || "Gallery image"}
+                    className="w-full h-48 object-cover"
+                    loading="lazy"
+                    onError={(e) => {
+                      const placeholderSvg = `data:image/svg+xml;base64,${btoa(`
+                        <svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="400" height="400" fill="#f8f9fa"/>
+                          <text x="200" y="200" font-size="16" text-anchor="middle" fill="#ccc">Image not found</text>
+                        </svg>
+                      `)}`;
+                      e.currentTarget.src = placeholderSvg;
+                    }}
+                  />
+                  <div className="p-3 border-t bg-gray-100">
+                    <h3 className="text-sm font-semibold">
+                      {item.caption || "Untitled"}
+                    </h3>
+                    <p className="text-xs text-gray-600 mt-1 capitalize">
+                      {item.category}
+                    </p>
+                    {item.is_featured && (
+                      <span className="inline-block mt-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                        Featured
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <div className="text-center mt-8 text-sm text-gray-600">
+            Showing {galleryItems.length} of {galleryData?.count} images
+          </div>
+        </>
       )}
     </div>
   );

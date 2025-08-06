@@ -25,7 +25,7 @@ const ServiceCard = ({
         {prices.map((item) => (
           <li key={item.name} className="flex justify-between">
             <span>{item.name}</span>
-            <span>{item.price}</span>
+            <span>${item.price}</span>
           </li>
         ))}
       </ul>

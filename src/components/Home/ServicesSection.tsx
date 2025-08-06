@@ -77,7 +77,7 @@ const ServicesSection = () => {
 
     // Get first 3 services with both name and price
     return services.slice(0, 3).map((service: any) => ({
-      name: service.name, // This will be the actual service name like "Eyebrow Threading"
+      name: service.name,
       price: `${service.price}`,
     }));
   };
@@ -92,7 +92,7 @@ const ServicesSection = () => {
     <section className="bg-[#f7f6e7] py-16 mt-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-2">Our Services</h2>
+          <h2 className="text-3xl font-bold mb-2 font-display">Our Services</h2>
           <p className="text-gray-700">
             Discover our range of beauty services, each performed with skill,
             precision, and care.

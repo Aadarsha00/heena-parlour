@@ -23,18 +23,23 @@ export default function Navbar() {
             </a>
           </li>
           <li>
+            <a href="/services" className="text-gray-900 hover:text-gray-700">
+              Services
+            </a>
+          </li>
+          <li>
             <a href="/gallery" className="text-gray-900 hover:text-gray-700">
               Gallery
             </a>
           </li>
           <li>
-            <a href="/contact" className="text-gray-900 hover:text-gray-700">
-              Contact Us
+            <a href="/blog" className="text-gray-900 hover:text-gray-700">
+              Blog
             </a>
           </li>
           <li>
-            <a href="/services" className="text-gray-900 hover:text-gray-700">
-              Services
+            <a href="/contact" className="text-gray-900 hover:text-gray-700">
+              Contact
             </a>
           </li>
           <li>
@@ -89,6 +94,16 @@ export default function Navbar() {
                 Home
               </a>
             </li>
+
+            <li className="py-2">
+              <a
+                href="/services"
+                className="text-gray-900 hover:text-gray-700 block text-sm"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Services
+              </a>
+            </li>
             <li className="py-2">
               <a
                 href="/gallery"
@@ -96,6 +111,15 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Gallery
+              </a>
+            </li>
+            <li className="py-2">
+              <a
+                href="/blog"
+                className="text-gray-900 hover:text-gray-700 block text-sm"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Blogs
               </a>
             </li>
             <li className="py-2">
@@ -108,15 +132,6 @@ export default function Navbar() {
               </a>
             </li>
 
-            <li className="py-2">
-              <a
-                href="/services"
-                className="text-gray-900 hover:text-gray-700 block text-sm"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Services
-              </a>
-            </li>
             <li className="py-2">
               <a
                 href="/about"
