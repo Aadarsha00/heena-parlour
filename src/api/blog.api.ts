@@ -55,16 +55,24 @@ export const getRecentBlogPosts = async (): Promise<any> => {
     throw error?.response?.data?.message;
   }
 };
-// Get all unique categories
+
 export const getBlogCategories = async (): Promise<string[]> => {
   try {
     const response = await api.get("/blog/");
-    const allPosts = response.data.results || [];
-    const categories = [
-      ...new Set(allPosts.map((post: BlogPost) => post.category)),
-    ];
+    const allPosts = Array.isArray(response.data.results)
+      ? response.data.results
+      : [];
+
+    const rawCategories = allPosts
+      .map((post: BlogPost) => post.category)
+      .filter(
+        (category: any): category is string => typeof category === "string"
+      );
+
+    const categories: string[] = [...new Set<string>(rawCategories)];
+
     return categories;
   } catch (error: any) {
-    throw error?.response?.data?.message;
+    throw error?.response?.data?.message || "Failed to fetch categories";
   }
 };

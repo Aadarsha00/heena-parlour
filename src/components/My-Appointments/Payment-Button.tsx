@@ -6,10 +6,7 @@ interface PaymentButtonProps {
   onPaymentSuccess: () => void;
 }
 
-const PaymentButton: React.FC<PaymentButtonProps> = ({
-  appointmentId,
-  onPaymentSuccess,
-}) => {
+const PaymentButton: React.FC<PaymentButtonProps> = ({ appointmentId }) => {
   const handlePayment = () => {
     // TODO: Integrate with Stripe
     // For now, we'll just simulate navigation to payment page
