@@ -1,39 +1,81 @@
 export default function Hero() {
   return (
     <section className="w-full flex justify-center bg-white overflow-x-hidden">
-      <div className="w-[95%] max-w-[2100px] mx-auto">
+      <div className="w-full max-w-[2100px] mx-auto">
         {/* Hero Image and Overlay */}
         <div className="relative overflow-hidden">
+          {/* Desktop Image */}
           <img
-            src="/pictures/hero.png"
-            alt="Salon Background"
-            className="w-full h-[610px] object-cover"
+            src="/pictures/hero1.png"
+            alt="Hero Desktop"
+            className="hidden md:block w-full h-[610px] object-cover object-[center_right]"
           />
-          <div className="absolute inset-0 bg-[#CEC3AC80]/40 flex flex-col justify-start md:justify-center pt-28 md:pt-0 px-6 md:px-12 text-black">
-            <h1 className="font-display text-[34px] md:text-[50px] font-bold max-w-[540px] leading-tight mb-4 mt-6">
-              <span className="block md:hidden">
-                Elegance In Every
-                <br />
-                Thread. Art In
-                <br />
-                Every Stroke.
-              </span>
-              <span className="hidden md:block">
-                Elegance In Every
-                <br /> Thread. Art In Every
-                <br /> Stroke.
-              </span>
+
+          {/* Mobile Image */}
+          <img
+            src="/pictures/mobile-hero.png"
+            alt="Hero Mobile"
+            className="block md:hidden w-full h-[500px] object-cover object-right"
+          />
+
+          {/* Overlay Content */}
+          <div
+            className="absolute inset-0 flex flex-col justify-start md:justify-start 
+                        pt-12 md:pt-32 px-5 sm:px-6 md:px-12 text-black 
+                        items-start text-left"
+          >
+            <h1
+              className="font-display 
+                         text-[30px] sm:text-[30px] md:text-[50px] 
+                         font-bold max-w-[300px] sm:max-w-[360px] md:max-w-[540px] 
+                         leading-tight mb-3 mt-2 md:mt-6"
+            >
+              Elegance In Every
+              <br /> Thread. Art In Every
+              <br /> Stroke.
             </h1>
-            <p className="text-[18px] max-w-[480px] mb-6 text-gray-950 font-semibold">
+
+            <p
+              className="text-[19px] mt-3 sm:text-[17px] md:text-[18px] 
+                         max-w-[220px] sm:max-w-[280px] md:max-w-[380px] 
+                         mb-6 text-gray-950 font-semibold"
+            >
               Experience the art of beauty with our expert threading, henna and
               lash services.
             </p>
-            <div className="flex gap-4">
-              <a href="/services">
-                <button className="bg-black text-white px-6 py-2 rounded-full text-sm hover:bg-gray-800">
-                  Book Now
-                </button>
-              </a>
+
+            {/* Buttons Container */}
+            <div className="md:mb-0 mb-32 sm:mb-8">
+              {/* Mobile: Stack vertically with spacer */}
+              <div className="flex flex-col md:hidden">
+                <div className="flex-1"></div>
+                <div className="flex flex-col gap-4">
+                  <a href="/services">
+                    <button className="bg-black text-white px-5 py-2 rounded-full text-sm w-full transition-transform duration-200 hover:scale-105 hover:shadow-md hover:bg-black focus:outline-none focus:ring-0">
+                      Book Now
+                    </button>
+                  </a>
+                  <a href="/about">
+                    <button className="bg-white text-black border-2 border-black px-5 py-2 rounded-full text-sm w-full transition-transform duration-200 hover:scale-105 hover:shadow-md hover:bg-white focus:outline-none focus:ring-0">
+                      About Us
+                    </button>
+                  </a>
+                </div>
+              </div>
+
+              {/* Desktop: Side by side, directly below text */}
+              <div className="hidden md:flex gap-4">
+                <a href="/services">
+                  <button className="bg-black text-white px-6 py-2 rounded-full text-base transition-transform duration-200 hover:scale-105 hover:shadow-md hover:bg-black focus:outline-none focus:ring-0">
+                    Book Now
+                  </button>
+                </a>
+                <a href="/about">
+                  <button className="bg-white text-black border-2 border-black px-6 py-2 rounded-full text-base transition-transform duration-200 hover:scale-105 hover:shadow-md hover:bg-white focus:outline-none focus:ring-0">
+                    About Us
+                  </button>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -69,6 +111,7 @@ export default function Hero() {
               </li>
             </ul>
           </div>
+
           {/* Image Grid Right */}
           <div className="grid grid-cols-2 gap-4">
             <img

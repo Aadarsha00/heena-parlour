@@ -63,7 +63,7 @@ export default function LashServices() {
                     {service.description}
                   </p>
                 </div>
-                <div className="bg-black text-white text-sm px-3 py-1 rounded-full font-semibold whitespace-nowrap ml-4">
+                <div className="bg-[#A0522D] text-white text-sm px-3 py-1 rounded-full font-semibold whitespace-nowrap ml-4">
                   ${service.price}
                 </div>
               </div>

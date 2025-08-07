@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle, XCircle, CreditCard, AlertCircle } from "lucide-react";
+import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 
 interface StatusBadgeProps {
   status: string;
@@ -31,9 +31,9 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, paymentStatus }) => {
     }
     if (status === "confirmed" && paymentStatus === "pending") {
       return {
-        text: "Payment Pending",
-        color: "bg-yellow-100 text-yellow-800",
-        icon: CreditCard,
+        text: "Confirmed",
+        color: "bg-green-100 text-green-800",
+        icon: CheckCircle,
       };
     }
     if (status === "booked") {
@@ -41,6 +41,13 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, paymentStatus }) => {
         text: "Waiting Confirmation",
         color: "bg-blue-100 text-blue-800",
         icon: AlertCircle,
+      };
+    }
+    if (status === "no_show") {
+      return {
+        text: "No Show",
+        color: "bg-red-100 text-red-800",
+        icon: XCircle,
       };
     }
     return {

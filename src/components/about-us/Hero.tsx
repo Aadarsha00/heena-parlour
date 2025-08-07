@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Hero() {
   return (
     <section className="w-full flex flex-col items-center bg-white overflow-x-hidden">
@@ -8,22 +10,27 @@ export default function Hero() {
           alt="Salon Background"
           className="w-full h-[630px] object-cover"
         />
-        <div className="absolute inset-0 bg-[#CEC3AC80]/40 flex flex-col justify-start md:justify-center pt-52 md:pt-0 px-6 md:px-12 text-black">
-          <h1 className="font-display text-[34px] md:text-[50px] font-bold max-w-[540px] leading-tight mb-7 mt-15">
+        <div
+          className="absolute inset-0 bg-[#00000080]/30 flex flex-col 
+                        justify-start md:justify-center 
+                        pt-64 sm:pt-56 md:pt-0
+                        px-6 md:px-12 text-black"
+        >
+          <h1 className="font-display text-white text-[34px] md:text-[50px] font-bold max-w-[540px] leading-tight mb-7">
             About Our Salon
           </h1>
-          <p className="text-[18px] mb-6 text-gray-950 font-semibold">
+          <p className="text-[16px] sm:text-[18px] mb-6 text-white font-semibold max-w-[260px] sm:max-w-[540px]">
             Discover the story, values, and commitment behind Beautiful{" "}
             <br className="hidden md:block" />
             Eyebrow Threading & Henna.
           </p>
           <div className="flex gap-4">
-            <button className="bg-black text-white px-6 py-2 rounded-full text-sm hover:bg-gray-800">
-              Book Now
-            </button>
-            <button className="bg-white text-black px-6 py-2 rounded-full text-sm hover:bg-gray-100">
-              Services
-            </button>
+            <Link
+              to="/services"
+              className="bg-white text-black px-6 py-2 rounded-full text-sm hover:bg-gray-100"
+            >
+              View Our Services
+            </Link>
           </div>
         </div>
       </div>
@@ -51,13 +58,8 @@ export default function Hero() {
             same dedication to quality and personalized care.
           </p>
           <div className="flex items-center gap-4 mt-6">
-            <img
-              src="/pictures/founder.jpg"
-              alt="Founder"
-              className="w-12 h-12 rounded-full object-cover"
-            />
             <div>
-              <p className="font-semibold">Founder's Name</p>
+              <p className="font-semibold">Priya Sharma</p>
               <p className="text-sm text-gray-600">Founder & Lead Artist</p>
             </div>
           </div>

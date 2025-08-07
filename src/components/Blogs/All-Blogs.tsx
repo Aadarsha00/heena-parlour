@@ -34,7 +34,7 @@ export default function BlogGrid() {
         is_published: true,
       }),
   });
-
+  console.log(blogResponse);
   // Handle pagination (client-side for now, can be moved to backend)
   const allPosts = blogResponse?.results || [];
   const paginatedPosts = allPosts.slice(

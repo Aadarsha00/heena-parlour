@@ -8,7 +8,7 @@ import { Payment } from "./pages/Payment";
 import ScrollToTop from "./ui/Scroll-Top";
 import { Gallery } from "./pages/Gallery";
 import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./context/Protected-Route";
+
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Toaster } from "react-hot-toast";
@@ -16,6 +16,7 @@ import AppointmentDetailsForm from "./components/booking/Appoinntment-Detail";
 import { MyAppointment } from "./pages/My-Appointment";
 import { Blog } from "./pages/Blog";
 import BlogDetailPage from "./components/Blogs/Blog-Deatil";
+import ProtectedRoute from "./context/Protected-Route";
 
 function App() {
   return (

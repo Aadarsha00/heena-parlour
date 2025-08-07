@@ -1,14 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { XCircle, RefreshCw, Calendar } from "lucide-react";
 import type { Appointment } from "../../interface/appointment.interface";
-import {
-  cancelAppointment,
-  getAppointments,
-  getMyUpcomingAppointments,
-  getPaymentPendingAppointments,
-} from "../../api/appointment.api";
+import { cancelAppointment, getAppointments } from "../../api/appointment.api";
 import AppointmentStats from "./Stats";
 import AppointmentFilters from "./Filter";
 import AppointmentCard from "./Card";
@@ -30,48 +24,28 @@ export interface AppointmentStats {
 }
 
 const AppointmentDashboard: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+  const [activeFilter, setActiveFilter] = useState<FilterType>("upcoming"); // Changed from "all" to "upcoming"
   const [, setSelectedAppointment] = useState<Appointment | null>(null);
   const queryClient = useQueryClient();
 
-  // Fetch all appointments
+  // Fetch all appointments - single API call
   const {
     data: allAppointmentsResponse,
     isLoading,
     error,
     refetch,
   } = useQuery({
-    queryKey: ["appointments", "all"],
+    queryKey: ["appointments"],
     queryFn: () => getAppointments(),
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 
-  // Fetch upcoming appointments
-  const { data: upcomingAppointmentsResponse } = useQuery({
-    queryKey: ["appointments", "upcoming"],
-    queryFn: getMyUpcomingAppointments,
-  });
+  console.log("data", allAppointmentsResponse);
 
-  // Fetch payment pending appointments
-  const { data: paymentPendingAppointmentsResponse } = useQuery({
-    queryKey: ["appointments", "payment_pending"],
-    queryFn: getPaymentPendingAppointments,
-  });
-
-  // Extract arrays from API responses
+  // Extract appointments array from API response
   const allAppointments = Array.isArray(allAppointmentsResponse)
     ? allAppointmentsResponse
     : allAppointmentsResponse?.results || [];
-
-  const upcomingAppointments = Array.isArray(upcomingAppointmentsResponse)
-    ? upcomingAppointmentsResponse
-    : upcomingAppointmentsResponse?.results || [];
-
-  const paymentPendingAppointments = Array.isArray(
-    paymentPendingAppointmentsResponse
-  )
-    ? paymentPendingAppointmentsResponse
-    : paymentPendingAppointmentsResponse?.results || [];
 
   // Cancel appointment mutation
   const cancelMutation = useMutation({
@@ -85,35 +59,69 @@ const AppointmentDashboard: React.FC = () => {
     },
   });
 
+  // Helper function to check if appointment is upcoming
+  const isUpcoming = (appointment: Appointment): boolean => {
+    const now = new Date();
+    const appointmentDateTime = new Date(
+      `${appointment.appointment_date}T${appointment.appointment_time}`
+    );
+    return (
+      appointmentDateTime > now &&
+      appointment.status !== "cancelled" &&
+      appointment.status !== "completed"
+    );
+  };
+
   // Filter appointments based on active filter
   const getFilteredAppointments = (): Appointment[] => {
     switch (activeFilter) {
       case "upcoming":
-        return upcomingAppointments;
+        return allAppointments.filter((apt: Appointment) => isUpcoming(apt));
       case "payment_pending":
-        return paymentPendingAppointments;
+        return allAppointments.filter(
+          (apt: Appointment) => apt.payment_status === "pending"
+        );
       case "confirmed":
         return allAppointments.filter(
-          (apt: any) =>
-            apt.status === "confirmed" && apt.payment_status === "paid"
+          (apt: Appointment) => apt.status === "confirmed"
         );
       case "cancelled":
-        return allAppointments.filter((apt: any) => apt.status === "cancelled");
+        return allAppointments.filter(
+          (apt: Appointment) => apt.status === "cancelled"
+        );
+      case "all":
       default:
         return allAppointments;
     }
   };
+
+  // Calculate upcoming appointments
+  const upcomingAppointments = allAppointments.filter((apt: Appointment) =>
+    isUpcoming(apt)
+  );
+
+  // Calculate payment pending appointments
+  const paymentPendingAppointments = allAppointments.filter(
+    (apt: Appointment) => apt.payment_status === "pending"
+  );
+
+  // Calculate confirmed appointments
+  const confirmedAppointments = allAppointments.filter(
+    (apt: Appointment) => apt.status === "confirmed"
+  );
+
+  // Calculate cancelled appointments
+  const cancelledAppointments = allAppointments.filter(
+    (apt: Appointment) => apt.status === "cancelled"
+  );
 
   // Calculate stats
   const stats: AppointmentStats = {
     total: allAppointments.length,
     upcoming: upcomingAppointments.length,
     paymentPending: paymentPendingAppointments.length,
-    confirmed: allAppointments.filter(
-      (apt: any) => apt.status === "confirmed" && apt.payment_status === "paid"
-    ).length,
-    cancelled: allAppointments.filter((apt: any) => apt.status === "cancelled")
-      .length,
+    confirmed: confirmedAppointments.length,
+    cancelled: cancelledAppointments.length,
   };
 
   const filteredAppointments = getFilteredAppointments();
@@ -134,8 +142,8 @@ const AppointmentDashboard: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen" style={{ backgroundColor: "#F5F5DC" }}>
+        <div className="max-w-7xl mx-auto p-4">
           <div className="bg-red-50 border border-red-200 rounded-md p-4">
             <div className="flex">
               <XCircle className="h-5 w-5 text-red-400" />
@@ -159,7 +167,7 @@ const AppointmentDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: "#F5F5DC" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">

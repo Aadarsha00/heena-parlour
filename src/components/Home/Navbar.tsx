@@ -1,14 +1,16 @@
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <nav className="w-full bg-white  relative">
+    <nav className="w-full bg-white relative">
       <div className="flex items-center justify-between py-3 px-6">
         {/* Logo */}
         <div className="w-12 h-12 bg-[#f3e8dc] rounded-full flex items-center justify-center ml-7">
@@ -27,6 +29,17 @@ export default function Navbar() {
               Services
             </a>
           </li>
+          {/* Show My Appointments only if authenticated */}
+          {isAuthenticated && (
+            <li>
+              <a
+                href="/my-appointment"
+                className="text-gray-900 hover:text-gray-700"
+              >
+                Appointments
+              </a>
+            </li>
+          )}
           <li>
             <a href="/gallery" className="text-gray-900 hover:text-gray-700">
               Gallery
@@ -51,7 +64,7 @@ export default function Navbar() {
 
         {/* Desktop Book Now Button */}
         <a href="/services">
-          <button className="hidden md:block bg-black text-white py-2 px-4 mr-10 rounded-full text-sm hover:bg-gray-800">
+          <button className="hidden md:block bg-black text-white py-2 px-4 mr-10 rounded-full text-sm hover:bg-black transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-0">
             Book Now
           </button>
         </a>
@@ -94,7 +107,6 @@ export default function Navbar() {
                 Home
               </a>
             </li>
-
             <li className="py-2">
               <a
                 href="/services"
@@ -104,6 +116,18 @@ export default function Navbar() {
                 Services
               </a>
             </li>
+            {/* Show My Appointments only if authenticated */}
+            {isAuthenticated && (
+              <li className="py-2">
+                <a
+                  href="/my-appointment"
+                  className="text-gray-900 hover:text-gray-700 block text-sm"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Appointments
+                </a>
+              </li>
+            )}
             <li className="py-2">
               <a
                 href="/gallery"
@@ -131,7 +155,6 @@ export default function Navbar() {
                 Contact Us
               </a>
             </li>
-
             <li className="py-2">
               <a
                 href="/about"
@@ -141,13 +164,17 @@ export default function Navbar() {
                 About Us
               </a>
             </li>
+
+            {/* Mobile Book Now Button with animation */}
             <li className="py-3">
-              <button
-                className="w-full bg-black text-white py-2 px-4 rounded-full text-sm hover:bg-gray-800"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Book Now
-              </button>
+              <a href="/services">
+                <button
+                  className="w-full bg-black text-white py-2 px-4 rounded-full text-sm hover:bg-black transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-0"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Book Now
+                </button>
+              </a>
             </li>
           </ul>
         </div>

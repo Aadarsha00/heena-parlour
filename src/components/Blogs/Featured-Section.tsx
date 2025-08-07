@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { getFeaturedBlogPosts } from "../../api/blog.api";
 
 const FeaturedSection = () => {
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const {
     data: featuredPosts,
@@ -27,6 +30,11 @@ const FeaturedSection = () => {
     });
   };
 
+  const filteredPosts =
+    featuredPosts?.filter((post: any) =>
+      post.title.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
+
   return (
     <section className="bg-white">
       {/* Header */}
@@ -43,6 +51,8 @@ const FeaturedSection = () => {
           <div className="mt-4 text-left">
             <input
               type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search Our Blogs....."
               className="px-4 py-2 rounded-full border w-full max-w-sm focus:outline-none"
             />
@@ -73,20 +83,20 @@ const FeaturedSection = () => {
             </div>
           )}
 
-          {featuredPosts && featuredPosts.length > 0 && (
+          {filteredPosts.length > 0 && (
             <div className="flex flex-col md:flex-row gap-6">
               {/* First Card */}
               <div
                 className={`flex flex-col sm:flex-row ${
-                  featuredPosts.length === 1 ? "w-full" : "md:w-[55%]"
+                  filteredPosts.length === 1 ? "w-full" : "md:w-[55%]"
                 } h-auto bg-white rounded-xl shadow overflow-hidden`}
               >
                 <div className="sm:w-1/2 w-full h-64 sm:h-auto">
                   <img
                     src={
-                      featuredPosts[0].featured_image_url || "pictures/img4.jpg"
+                      filteredPosts[0].featured_image_url || "pictures/img4.jpg"
                     }
-                    alt={featuredPosts[0].title}
+                    alt={filteredPosts[0].title}
                     className="object-cover w-full h-full"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = "pictures/img4.jpg";
@@ -96,24 +106,24 @@ const FeaturedSection = () => {
                 <div className="sm:w-1/2 w-full p-5 flex flex-col justify-between">
                   <div>
                     <span className="bg-[#E5C862] text-xs font-semibold px-2 py-1 rounded-full text-gray-800 inline-block mb-2">
-                      {featuredPosts[0].category}
+                      {filteredPosts[0].category}
                     </span>
                     <h3 className="text-2xl font-serif mb-1">
-                      {featuredPosts[0].title}
+                      {filteredPosts[0].title}
                     </h3>
                     <p className="text-md text-gray-700 mt-3">
-                      {featuredPosts[0].excerpt}
+                      {filteredPosts[0].excerpt}
                     </p>
                   </div>
                   <div className="flex items-center justify-between text-xs text-gray-600 mt-4">
                     <span>
                       Admin
                       <br />
-                      {formatDate(featuredPosts[0].published_at)}
+                      {formatDate(filteredPosts[0].published_at)}
                     </span>
                     <span
                       className="text-[#B19A50] font-semibold cursor-pointer hover:underline"
-                      onClick={() => handleReadMore(featuredPosts[0].slug)}
+                      onClick={() => handleReadMore(filteredPosts[0].slug)}
                     >
                       Read More →
                     </span>
@@ -122,15 +132,15 @@ const FeaturedSection = () => {
               </div>
 
               {/* Second Card */}
-              {featuredPosts.length > 1 && (
+              {filteredPosts.length > 1 && (
                 <div className="w-full md:w-[40%] bg-white rounded-xl shadow overflow-hidden flex flex-col">
                   <div className="h-64 md:h-[210px] w-full">
                     <img
                       src={
-                        featuredPosts[1].featured_image_url ||
+                        filteredPosts[1].featured_image_url ||
                         "pictures/img3.png"
                       }
-                      alt={featuredPosts[1].title}
+                      alt={filteredPosts[1].title}
                       className="object-cover w-full h-full"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =
@@ -141,24 +151,24 @@ const FeaturedSection = () => {
                   <div className="flex-1 p-5 flex flex-col justify-between">
                     <div>
                       <span className="bg-[#E5C862] text-xs font-semibold px-2 py-1 rounded-full text-gray-800 inline-block mb-2">
-                        {featuredPosts[1].category}
+                        {filteredPosts[1].category}
                       </span>
                       <h3 className="text-2xl font-serif mb-1">
-                        {featuredPosts[1].title}
+                        {filteredPosts[1].title}
                       </h3>
                       <p className="text-sm text-gray-700">
-                        {featuredPosts[1].excerpt}
+                        {filteredPosts[1].excerpt}
                       </p>
                     </div>
                     <div className="flex items-center justify-between text-xs text-gray-600 mt-4">
                       <span>
                         Admin
                         <br />
-                        {formatDate(featuredPosts[1].published_at)}
+                        {formatDate(filteredPosts[1].published_at)}
                       </span>
                       <span
                         className="text-[#B19A50] font-semibold cursor-pointer hover:underline"
-                        onClick={() => handleReadMore(featuredPosts[1].slug)}
+                        onClick={() => handleReadMore(filteredPosts[1].slug)}
                       >
                         Read More →
                       </span>
@@ -169,10 +179,10 @@ const FeaturedSection = () => {
             </div>
           )}
 
-          {featuredPosts && featuredPosts.length === 0 && (
+          {filteredPosts.length === 0 && !isLoading && (
             <div className="flex justify-center items-center h-64">
               <div className="text-lg text-gray-600">
-                No featured posts available
+                No posts found for "{searchTerm}"
               </div>
             </div>
           )}

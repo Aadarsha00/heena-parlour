@@ -1,22 +1,55 @@
 import React from "react";
-import { Calendar, Clock, Eye, CreditCard } from "lucide-react";
+import { Calendar, CreditCard, User } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { Appointment } from "../../interface/appointment.interface";
 import StatusBadge from "./Status-Badge";
 import PaymentButton from "./Payment-Button";
 import CancelButton from "./Cancel-Button";
 
-// Utility function to format date and time
-const formatDateTime = (date: string, time: string): string => {
+// Enhanced utility function to format date and time with more details
+const formatDetailedDateTime = (date: string, time: string) => {
   const dateTime = new Date(`${date}T${time}`);
-  return dateTime.toLocaleString("en-US", {
-    weekday: "short",
+  const now = new Date();
+
+  // Calculate days difference
+  const diffTime = dateTime.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  const formattedDate = dateTime.toLocaleDateString("en-US", {
+    weekday: "long",
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
+  });
+
+  const formattedTime = dateTime.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
+    hour12: true,
   });
+
+  // Add relative time indicator
+  let relativeTime = "";
+  if (diffDays === 0) {
+    relativeTime = "Today";
+  } else if (diffDays === 1) {
+    relativeTime = "Tomorrow";
+  } else if (diffDays === -1) {
+    relativeTime = "Yesterday";
+  } else if (diffDays > 1 && diffDays <= 7) {
+    relativeTime = `In ${diffDays} days`;
+  } else if (diffDays < -1 && diffDays >= -7) {
+    relativeTime = `${Math.abs(diffDays)} days ago`;
+  }
+
+  return {
+    fullDate: formattedDate,
+    time: formattedTime,
+    relativeTime,
+    isToday: diffDays === 0,
+    isPast: diffDays < 0,
+    isUpcoming: diffDays > 0 && diffDays <= 7,
+  };
 };
 
 // Payment Status Badge Component
@@ -77,14 +110,18 @@ interface AppointmentCardProps {
 const AppointmentCard: React.FC<AppointmentCardProps> = ({
   appointment,
   onCancel,
-  onViewDetails,
   cancelLoading,
 }) => {
   const queryClient = useQueryClient();
 
-  const showPaymentButton =
-    appointment.status === "confirmed" &&
-    appointment.payment_status === "pending";
+  const dateTimeInfo = formatDetailedDateTime(
+    appointment.appointment_date,
+    appointment.appointment_time
+  );
+
+  // Payment button logic - disabled since payment is not integrated
+  const showPaymentButton = false;
+
   const showCancelButton =
     appointment.status !== "cancelled" && appointment.status !== "completed";
 
@@ -94,19 +131,46 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+    <div
+      className={`bg-white rounded-lg shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow ${
+        dateTimeInfo.isToday ? "ring-2 ring-blue-500" : ""
+      }`}
+    >
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">
-            Appointment #{appointment.id}
+            {appointment.service_details?.name ||
+              `Service #${appointment.service}`}
           </h3>
-          <p className="text-sm text-gray-600">
-            {formatDateTime(
-              appointment.appointment_date,
-              appointment.appointment_time
-            )}
-          </p>
+
+          {/* Enhanced Date and Time Display */}
+          <div className="mt-2">
+            <p className="text-sm font-medium text-gray-900">
+              {dateTimeInfo.fullDate}
+            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-sm font-medium text-gray-900">
+                {dateTimeInfo.time}
+              </p>
+              {dateTimeInfo.relativeTime && (
+                <span
+                  className={`px-2 py-1 text-xs rounded-full font-medium ${
+                    dateTimeInfo.isToday
+                      ? "bg-blue-100 text-blue-800"
+                      : dateTimeInfo.isUpcoming
+                      ? "bg-green-100 text-green-800"
+                      : dateTimeInfo.isPast
+                      ? "bg-gray-100 text-gray-600"
+                      : "bg-gray-100 text-gray-800"
+                  }`}
+                >
+                  {dateTimeInfo.relativeTime}
+                </span>
+              )}
+            </div>
+          </div>
         </div>
+
         <div className="flex flex-col gap-2 items-end">
           <StatusBadge
             status={appointment.status}
@@ -119,41 +183,41 @@ const AppointmentCard: React.FC<AppointmentCardProps> = ({
       <div className="space-y-2 mb-4">
         <div className="flex items-center text-sm text-gray-600">
           <Calendar className="h-4 w-4 mr-2" />
-          Service ID: {appointment.service}
+          Duration:{" "}
+          {appointment.service_details?.duration_minutes ||
+            appointment.duration_minutes}{" "}
+          minutes
         </div>
         <div className="flex items-center text-sm text-gray-600">
-          <Clock className="h-4 w-4 mr-2" />
-          Stylist ID: {appointment.stylist}
+          <CreditCard className="h-4 w-4 mr-2" />
+          Price: $
+          {appointment.service_details?.price || appointment.total_amount}
         </div>
+        {appointment.stylist && (
+          <div className="flex items-center text-sm text-gray-600">
+            <User className="h-4 w-4 mr-2" />
+            Stylist ID: {appointment.stylist}
+          </div>
+        )}
         {appointment.notes && (
           <p className="text-sm text-gray-600 italic">"{appointment.notes}"</p>
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2 justify-between items-center">
-        <button
-          onClick={() => onViewDetails(appointment)}
-          className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-        >
-          <Eye className="h-4 w-4 mr-2" />
-          View Details
-        </button>
-
-        <div className="flex gap-2">
-          {showPaymentButton && (
-            <PaymentButton
-              appointmentId={appointment.id}
-              onPaymentSuccess={handlePaymentSuccess}
-            />
-          )}
-          {showCancelButton && (
-            <CancelButton
-              appointment={appointment}
-              onCancel={onCancel}
-              isLoading={cancelLoading}
-            />
-          )}
-        </div>
+      <div className="flex flex-wrap gap-2 justify-end items-center">
+        {showPaymentButton && (
+          <PaymentButton
+            appointmentId={appointment.id}
+            onPaymentSuccess={handlePaymentSuccess}
+          />
+        )}
+        {showCancelButton && (
+          <CancelButton
+            appointment={appointment}
+            onCancel={onCancel}
+            isLoading={cancelLoading}
+          />
+        )}
       </div>
     </div>
   );

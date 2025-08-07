@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import api from "../axios/api.axios";
+import toast from "react-hot-toast";
 
 // Interfaces
 interface CreateAppointmentData {
@@ -74,18 +75,13 @@ const AppointmentDetailsForm = () => {
   // Create appointment mutation
   const createAppointmentMutation = useMutation({
     mutationFn: createAppointment,
-    onSuccess: (data) => {
-      console.log("Appointment created successfully:", data);
-      // You can navigate to a success page or show a success message
-      alert("Appointment confirmed successfully! Payment is pending.");
-      // Navigate to a success page or back to home
-      navigate("/payment", {
-        state: { appointmentId: data.id, appointmentData: data },
-      });
+    onSuccess: () => {
+      toast.success("Appointment confirmed successfully! Payment is pending.");
+      navigate("/my-appointment");
     },
     onError: (error) => {
       console.error("Failed to create appointment:", error);
-      alert(`Failed to create appointment: ${error}`);
+      toast.error("Failed to create appointment! Please try again later");
       setIsSubmitting(false);
     },
   });
@@ -97,7 +93,6 @@ const AppointmentDetailsForm = () => {
     try {
       await createAppointmentMutation.mutateAsync(data);
     } catch (error) {
-      // Error handling is done in the mutation
       setIsSubmitting(false);
     }
   };

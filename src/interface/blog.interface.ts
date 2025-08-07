@@ -2,6 +2,7 @@ export interface BlogPost {
   id: number;
   title: string;
   category: string;
+  content: string;
   excerpt: string;
   featured_image_url: string;
   is_featured: boolean;

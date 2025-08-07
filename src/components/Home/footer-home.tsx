@@ -37,7 +37,7 @@ const Footer: React.FC<IFooter> = ({
             {primaryButtonText && (
               <a
                 href={primaryButtonLink}
-                className="bg-orange-500 hover:bg-white hover:text-black text-white py-2 px-4 rounded-2xl text-sm"
+                className="bg-[#A0522D] hover:bg-white hover:text-black text-white py-2 px-4 rounded-2xl text-sm"
               >
                 {primaryButtonText}
               </a>
