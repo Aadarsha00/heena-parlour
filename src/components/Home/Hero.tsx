@@ -113,27 +113,20 @@ export default function Hero() {
           </div>
 
           {/* Image Grid Right */}
-          <div className="grid grid-cols-2 gap-4">
-            <img
-              src="/pictures/image1.jpg"
-              alt="Henna"
-              className="rounded-2xl object-cover w-[300px] h-[295px]"
-            />
-            <img
-              src="/pictures/img2.jpg"
-              alt="Lashes"
-              className="rounded-2xl object-cover w-[300px] h-[295px]"
-            />
-            <img
-              src="/pictures/img3.png"
-              alt="Salon"
-              className="rounded-2xl object-cover w-[300px] h-[295px]"
-            />
-            <img
-              src="/pictures/img4.jpg"
-              alt="Lashes Close"
-              className="rounded-2xl object-cover w-[300px] h-[295px]"
-            />
+          <div className="grid grid-cols-2 gap-3 px-4 sm:px-8">
+            {[
+              "/pictures/image1.jpg",
+              "/pictures/img2.jpg",
+              "/pictures/img3.png",
+              "/pictures/img4.jpg",
+            ].map((src, idx) => (
+              <img
+                key={idx}
+                src={src}
+                alt={`Gallery ${idx + 1}`}
+                className="rounded-2xl w-full h-[140px] sm:h-[180px] md:w-[300px] md:h-[295px] object-cover"
+              />
+            ))}
           </div>
         </div>
       </div>
