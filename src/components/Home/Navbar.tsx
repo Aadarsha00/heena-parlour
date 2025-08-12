@@ -1,186 +1,145 @@
 import { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
 
-export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+// Type definitions for better type safety
+interface NavItem {
+  label: string;
+  href: string;
+  requiresAuth?: boolean;
+}
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+interface NavbarProps {
+  isAuthenticated?: boolean;
+}
+
+const navItems: NavItem[] = [
+  { label: "Home", href: "/" },
+  { label: "Services", href: "/services" },
+  { label: "Appointments", href: "/my-appointment", requiresAuth: true },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Blog", href: "/blog" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
+];
+
+export default function Navbar({ isAuthenticated = false }: NavbarProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  const toggleMenu = (): void => {
+    setIsMenuOpen((prev) => !prev);
   };
 
+  const closeMenu = (): void => {
+    setIsMenuOpen(false);
+  };
+
+  const filteredNavItems = navItems.filter(
+    (item) => !item.requiresAuth || (item.requiresAuth && isAuthenticated)
+  );
+
   return (
-    <nav className="w-full bg-white relative">
-      <div className="flex items-center justify-between py-3 px-6">
-        {/* Logo */}
-        <a href="/">
-          <div className="w-12 h-12 bg-[#f3e8dc] rounded-full flex items-center justify-center ml-7 cursor-pointer">
-            <img src="/pictures/logo.png" alt="Logo" className="w-10 h-10" />
+    <nav className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-neutral-100 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <a
+              href="/"
+              className="group flex items-center space-x-3 transition-transform duration-200 hover:scale-[1.02]"
+              aria-label="Navigate to homepage"
+            >
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow duration-200">
+                <img
+                  src="/pictures/logo.png"
+                  alt="Company Logo"
+                  className="w-6 h-6 object-contain"
+                />
+              </div>
+            </a>
           </div>
-        </a>
 
-        {/* Desktop Nav Links */}
-        <ul className="hidden md:flex gap-6 text-sm font-medium">
-          <li>
-            <a href="/" className="text-gray-900 hover:text-gray-700">
-              Home
-            </a>
-          </li>
-          <li>
-            <a href="/services" className="text-gray-900 hover:text-gray-700">
-              Services
-            </a>
-          </li>
-          {/* Show My Appointments only if authenticated */}
-          {isAuthenticated && (
-            <li>
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center space-x-1">
+            {filteredNavItems.map((item) => (
               <a
-                href="/my-appointment"
-                className="text-gray-900 hover:text-gray-700"
+                key={item.href}
+                href={item.href}
+                className="relative px-4 py-2 text-sm font-medium text-neutral-700 hover:text-neutral-900 transition-colors duration-200 rounded-lg hover:bg-neutral-50 group"
               >
-                Appointments
+                {item.label}
+                <span className="absolute inset-x-4 -bottom-px h-px bg-neutral-900 scale-x-0 group-hover:scale-x-100 transition-transform duration-200 origin-center" />
               </a>
-            </li>
-          )}
-          <li>
-            <a href="/gallery" className="text-gray-900 hover:text-gray-700">
-              Gallery
-            </a>
-          </li>
-          <li>
-            <a href="/blog" className="text-gray-900 hover:text-gray-700">
-              Blog
-            </a>
-          </li>
-          <li>
-            <a href="/contact" className="text-gray-900 hover:text-gray-700">
-              Contact
-            </a>
-          </li>
-          <li>
-            <a href="/about" className="text-gray-900 hover:text-gray-700">
-              About Us
-            </a>
-          </li>
-        </ul>
-
-        {/* Desktop Book Now Button */}
-        <a href="/services">
-          <button className="hidden md:block bg-black text-white py-2 px-4 mr-10 rounded-full text-sm hover:bg-black transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-0">
-            Book Now
-          </button>
-        </a>
-
-        {/* Mobile Hamburger Button */}
-        <button
-          onClick={toggleMenu}
-          className="md:hidden mr-10 p-2 hover:bg-gray-50 rounded-lg transition-colors duration-200 border-0 bg-transparent"
-        >
-          <div className="w-5 h-4 flex flex-col justify-between">
-            <div
-              className={`w-full h-0.5 bg-gray-700 transition-all duration-300 ${
-                isMenuOpen ? "rotate-45 translate-y-1.5" : ""
-              }`}
-            ></div>
-            <div
-              className={`w-full h-0.5 bg-gray-700 transition-all duration-300 ${
-                isMenuOpen ? "opacity-0" : ""
-              }`}
-            ></div>
-            <div
-              className={`w-full h-0.5 bg-gray-700 transition-all duration-300 ${
-                isMenuOpen ? "-rotate-45 -translate-y-1.5" : ""
-              }`}
-            ></div>
+            ))}
           </div>
-        </button>
+
+          {/* Desktop CTA Button */}
+          <div className="hidden lg:flex items-center">
+            <a href="/services">
+              <button className="bg-neutral-900 hover:bg-neutral-800 text-white px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 hover:shadow-lg hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2">
+                Book Now
+              </button>
+            </a>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={toggleMenu}
+            className="lg:hidden p-2 rounded-lg text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2"
+            aria-expanded={isMenuOpen}
+            aria-label="Toggle navigation menu"
+          >
+            <div className="w-5 h-5 relative">
+              <span
+                className={`absolute left-0 top-1 w-5 h-0.5 bg-current transition-all duration-300 ${
+                  isMenuOpen ? "rotate-45 translate-y-2" : ""
+                }`}
+              />
+              <span
+                className={`absolute left-0 top-2.5 w-5 h-0.5 bg-current transition-all duration-300 ${
+                  isMenuOpen ? "opacity-0" : ""
+                }`}
+              />
+              <span
+                className={`absolute left-0 top-4 w-5 h-0.5 bg-current transition-all duration-300 ${
+                  isMenuOpen ? "-rotate-45 -translate-y-2" : ""
+                }`}
+              />
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
-          <ul className="py-4 px-6">
-            <li className="py-2">
+      <div
+        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="bg-white border-t border-neutral-100 shadow-lg">
+          <div className="px-4 py-4 space-y-1">
+            {filteredNavItems.map((item) => (
               <a
-                href="/"
-                className="text-gray-900 hover:text-gray-700 block text-sm"
-                onClick={() => setIsMenuOpen(false)}
+                key={item.href}
+                href={item.href}
+                onClick={closeMenu}
+                className="block px-4 py-3 text-sm font-medium text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50 rounded-lg transition-colors duration-200"
               >
-                Home
+                {item.label}
               </a>
-            </li>
-            <li className="py-2">
-              <a
-                href="/services"
-                className="text-gray-900 hover:text-gray-700 block text-sm"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Services
-              </a>
-            </li>
-            {/* Show My Appointments only if authenticated */}
-            {isAuthenticated && (
-              <li className="py-2">
-                <a
-                  href="/my-appointment"
-                  className="text-gray-900 hover:text-gray-700 block text-sm"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Appointments
-                </a>
-              </li>
-            )}
-            <li className="py-2">
-              <a
-                href="/gallery"
-                className="text-gray-900 hover:text-gray-700 block text-sm"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Gallery
-              </a>
-            </li>
-            <li className="py-2">
-              <a
-                href="/blog"
-                className="text-gray-900 hover:text-gray-700 block text-sm"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Blogs
-              </a>
-            </li>
-            <li className="py-2">
-              <a
-                href="/contact"
-                className="text-gray-900 hover:text-gray-700 block text-sm"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact Us
-              </a>
-            </li>
-            <li className="py-2">
-              <a
-                href="/about"
-                className="text-gray-900 hover:text-gray-700 block text-sm"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About Us
-              </a>
-            </li>
+            ))}
 
-            {/* Mobile Book Now Button with animation */}
-            <li className="py-3">
-              <a href="/services">
+            <div className="pt-4 border-t border-neutral-100">
+              <a href="/services" className="block">
                 <button
-                  className="w-full bg-black text-white py-2 px-4 rounded-full text-sm hover:bg-black transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-0"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={closeMenu}
+                  className="w-full bg-neutral-900 hover:bg-neutral-800 text-white px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2"
                 >
                   Book Now
                 </button>
               </a>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 }
