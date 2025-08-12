@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchReviews } from "../../api/review.api";
 
-export default function ClientTestimonials() {
+export default function AllClientTestimonials() {
   const { data } = useQuery({
     queryKey: ["review"],
     queryFn: fetchReviews,
@@ -11,9 +11,6 @@ export default function ClientTestimonials() {
   if (!data || !Array.isArray(data)) {
     return <p>Loading testimonials...</p>;
   }
-
-  // Take first 3 reviews only
-  const reviewsToShow = data.slice(0, 3);
 
   return (
     <section className="bg-white py-16 px-6 lg:px-20 text-center">
@@ -26,7 +23,7 @@ export default function ClientTestimonials() {
       </p>
 
       <div className="flex flex-wrap justify-center gap-8 md:gap-10">
-        {reviewsToShow.map((item, idx) => {
+        {data.map((item, idx) => {
           // Parse rating as number to render stars
           const rating = Number(item.Rating) || 0;
           return (
@@ -61,15 +58,6 @@ export default function ClientTestimonials() {
             </div>
           );
         })}
-      </div>
-
-      <div className="mt-10">
-        <a
-          href="/testimonials"
-          className="inline-flex items-center text-sm font-medium text-black hover:underline"
-        >
-          Read More Testimonials <span className="ml-2">→</span>
-        </a>
       </div>
     </section>
   );

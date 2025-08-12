@@ -11,7 +11,6 @@ import { getServiceById } from "../../api/services.api";
 // API function to get appointments for a specific date
 const getAppointmentsForDate = async (date: string): Promise<Appointment[]> => {
   try {
-    // Using your actual API endpoint structure
     const response = await api.get(`/appointments/?appointment_date=${date}`);
     return response.data;
   } catch (error: any) {
@@ -58,9 +57,7 @@ const AppointmentBooking = () => {
     queryKey: ["appointments", selectedDate],
     queryFn: () => getAppointmentsForDate(selectedDate),
     enabled: !!selectedDate,
-    // Optional: Add some caching and refetch options
-    staleTime: 2 * 60 * 1000, // 2 minutes (shorter since appointments change frequently)
-    // Add error handling and data transformation
+    staleTime: 2 * 60 * 1000,
     select: (data) => {
       // Handle different API response formats
       if (Array.isArray(data)) {
@@ -322,39 +319,37 @@ const AppointmentBooking = () => {
 
         {/* Step Tracker */}
         <div className="relative flex justify-between items-start max-w-full lg:max-w-2xl mt-4 w-full px-2 lg:px-0">
-          {["Services", "Date and Time", "Your Details", "Payment"].map(
-            (step, index) => {
-              const isActive = index < 2;
-              const showLine = index < 1;
+          {["Services", "Date and Time", "Your Details"].map((step, index) => {
+            const isActive = index < 2;
+            const showLine = index < 1;
 
-              return (
+            return (
+              <div
+                className="flex flex-col items-center flex-1 relative"
+                key={step}
+              >
+                {showLine && (
+                  <div className="absolute top-4 left-1/2 w-full h-0.5 bg-[#A0522D] z-0" />
+                )}
                 <div
-                  className="flex flex-col items-center flex-1 relative"
-                  key={step}
+                  className={`z-10 w-6 h-6 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-xs lg:text-sm font-semibold ${
+                    isActive
+                      ? "bg-[#A0522D] text-white"
+                      : "bg-gray-300 text-gray-600"
+                  }`}
                 >
-                  {showLine && (
-                    <div className="absolute top-4 left-1/2 w-full h-0.5 bg-[#A0522D] z-0" />
-                  )}
-                  <div
-                    className={`z-10 w-6 h-6 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-xs lg:text-sm font-semibold ${
-                      isActive
-                        ? "bg-[#A0522D] text-white"
-                        : "bg-gray-300 text-gray-600"
-                    }`}
-                  >
-                    {index + 1}
-                  </div>
-                  <div
-                    className={`mt-2 text-xs lg:text-sm text-center ${
-                      isActive ? "text-[#A0522D]" : "text-gray-600"
-                    }`}
-                  >
-                    {step}
-                  </div>
+                  {index + 1}
                 </div>
-              );
-            }
-          )}
+                <div
+                  className={`mt-2 text-xs lg:text-sm text-center ${
+                    isActive ? "text-[#A0522D]" : "text-gray-600"
+                  }`}
+                >
+                  {step}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Calendar and Time Slot Section */}
@@ -476,7 +471,7 @@ const AppointmentBooking = () => {
                 : "bg-gray-400 cursor-not-allowed"
             }`}
           >
-            Next
+            Proceed for confirmation
           </button>
         </div>
       </div>
@@ -499,7 +494,6 @@ const AppointmentBooking = () => {
             {dayjs(selectedDate).format("dddd, MMMM D, YYYY")}
           </p>
           <p className="italic text-sm">{selectedTime}</p>
-          <p className="italic text-sm">Name Of the specialist (optional)</p>
         </div>
 
         <div>

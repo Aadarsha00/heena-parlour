@@ -13,9 +13,11 @@ export default function Navbar() {
     <nav className="w-full bg-white relative">
       <div className="flex items-center justify-between py-3 px-6">
         {/* Logo */}
-        <div className="w-12 h-12 bg-[#f3e8dc] rounded-full flex items-center justify-center ml-7">
-          <img src="/pictures/logo.png" alt="Logo" className="w-10 h-10" />
-        </div>
+        <a href="/">
+          <div className="w-12 h-12 bg-[#f3e8dc] rounded-full flex items-center justify-center ml-7 cursor-pointer">
+            <img src="/pictures/logo.png" alt="Logo" className="w-10 h-10" />
+          </div>
+        </a>
 
         {/* Desktop Nav Links */}
         <ul className="hidden md:flex gap-6 text-sm font-medium">

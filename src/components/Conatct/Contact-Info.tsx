@@ -1,6 +1,8 @@
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function ContactInfoSection() {
+  const navigate = useNavigate();
   return (
     <div className="w-full md:w-1/2 space-y-6 px-4 sm:px-6 md:px-8">
       {/* Location */}
@@ -79,7 +81,10 @@ export default function ContactInfoSection() {
           <li>Full Face Threading - $35</li>
         </ul>
         <div className="flex justify-center">
-          <button className="bg-black text-white px-6 py-2 rounded-full text-xs sm:text-sm hover:bg-gray-800 transition-colors duration-300">
+          <button
+            onClick={() => navigate("/services")}
+            className="bg-black text-white px-6 py-2 rounded-full text-xs sm:text-sm hover:bg-gray-800 transition-colors duration-300"
+          >
             Go to Services
           </button>
         </div>

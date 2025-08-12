@@ -65,8 +65,11 @@ const AppointmentDashboard: React.FC = () => {
     const appointmentDateTime = new Date(
       `${appointment.appointment_date}T${appointment.appointment_time}`
     );
+
+    const bufferTime = 30 * 60 * 1000; // 30 minutes in milliseconds
+
     return (
-      appointmentDateTime > now &&
+      appointmentDateTime.getTime() > now.getTime() - bufferTime &&
       appointment.status !== "cancelled" &&
       appointment.status !== "completed"
     );

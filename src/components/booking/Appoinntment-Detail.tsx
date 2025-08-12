@@ -129,42 +129,38 @@ const AppointmentDetailsForm = () => {
 
         {/* Step Tracker */}
         <div className="relative flex justify-between items-start max-w-full lg:max-w-2xl mt-4 w-full px-2 lg:px-0">
-          {["Services", "Date and Time", "Your Details", "Payment"].map(
-            (step, index) => {
-              const isActive = index < 3;
-              const isCurrent = index === 2;
-              const showLine = index < 2;
+          {["Services", "Date and Time", "Your Details"].map((step, index) => {
+            const isActive = index < 3;
+            const isCurrent = index === 2;
+            const showLine = index < 2;
 
-              return (
+            return (
+              <div
+                className="flex flex-col items-center flex-1 relative"
+                key={step}
+              >
+                {showLine && (
+                  <div className="absolute top-4 left-1/2 w-full h-0.5 bg-[#A0522D] z-0" />
+                )}
                 <div
-                  className="flex flex-col items-center flex-1 relative"
-                  key={step}
+                  className={`z-10 w-6 h-6 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-xs lg:text-sm font-semibold ${
+                    isActive
+                      ? "bg-[#A0522D] text-white"
+                      : "bg-gray-300 text-gray-600"
+                  } ${isCurrent ? "ring-2 ring-[#A0522D] ring-offset-2" : ""}`}
                 >
-                  {showLine && (
-                    <div className="absolute top-4 left-1/2 w-full h-0.5 bg-[#A0522D] z-0" />
-                  )}
-                  <div
-                    className={`z-10 w-6 h-6 lg:w-8 lg:h-8 rounded-full flex items-center justify-center text-xs lg:text-sm font-semibold ${
-                      isActive
-                        ? "bg-[#A0522D] text-white"
-                        : "bg-gray-300 text-gray-600"
-                    } ${
-                      isCurrent ? "ring-2 ring-[#A0522D] ring-offset-2" : ""
-                    }`}
-                  >
-                    {index + 1}
-                  </div>
-                  <div
-                    className={`mt-2 text-xs lg:text-sm text-center ${
-                      isActive ? "text-[#A0522D]" : "text-gray-600"
-                    } ${isCurrent ? "font-semibold" : ""}`}
-                  >
-                    {step}
-                  </div>
+                  {index + 1}
                 </div>
-              );
-            }
-          )}
+                <div
+                  className={`mt-2 text-xs lg:text-sm text-center ${
+                    isActive ? "text-[#A0522D]" : "text-gray-600"
+                  } ${isCurrent ? "font-semibold" : ""}`}
+                >
+                  {step}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Form */}
@@ -369,7 +365,7 @@ const AppointmentDetailsForm = () => {
             <span>${total.toFixed(2)}</span>
           </div>
           <p className="text-xs italic mt-1 text-green-700">
-            *Payment will be processed after confirmation
+            *Full Payment due at appointment.
           </p>
         </div>
 

@@ -17,6 +17,7 @@ import { MyAppointment } from "./pages/My-Appointment";
 import { Blog } from "./pages/Blog";
 import BlogDetailPage from "./components/Blogs/Blog-Deatil";
 import ProtectedRoute from "./context/Protected-Route";
+import { Testimonial } from "./pages/Testimonial";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
           <Route path="/payment" element={<Payment />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/testimonials" element={<Testimonial />} />
         </Routes>
         <Toaster />
       </AuthProvider>

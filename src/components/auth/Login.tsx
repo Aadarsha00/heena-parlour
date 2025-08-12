@@ -2,7 +2,7 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { loginSchema } from "../../schema/auth.schema";
 import type { LoginRequest } from "../../interface/auth.interface";
@@ -13,6 +13,7 @@ import { startTokenRefreshTimer } from "../../components/axios/api.axios";
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, setAuthenticated, isLoading, checkAuth } = useAuth();
   const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
 
@@ -23,6 +24,16 @@ const LoginForm = () => {
   } = useForm<LoginRequest>({
     resolver: yupResolver(loginSchema),
   });
+
+  // Get the returnTo parameter from URL
+  const getReturnToPath = () => {
+    const urlParams = new URLSearchParams(location.search);
+    const returnTo = urlParams.get("returnTo");
+    console.log("🔍 Current location.search:", location.search);
+    console.log("🔍 Parsed returnTo parameter:", returnTo);
+    console.log("🔍 Will redirect to:", returnTo || "/");
+    return returnTo || "/"; // Default to home if no returnTo
+  };
 
   const { mutate, isPending } = useMutation({
     mutationFn: loginUser,
@@ -42,9 +53,13 @@ const LoginForm = () => {
       // Show success toast
       toast.success("Login successful!");
 
-      // Navigate to home with a small delay to ensure state updates
+      // Get the return path and navigate there
+      const returnPath = getReturnToPath();
+      console.log("🔄 Redirecting to:", returnPath);
+
+      // Navigate to the return path with a small delay to ensure state updates
       setTimeout(() => {
-        navigate("/", { replace: true });
+        navigate(returnPath, { replace: true });
       }, 100);
     },
     onError: (error: any) => {
@@ -80,10 +95,19 @@ const LoginForm = () => {
   useEffect(() => {
     // Only redirect if auth check is complete, user is authenticated, and not currently logging in
     if (hasCheckedAuth && !isLoading && isAuthenticated && !isPending) {
-      console.log("🔄 Already authenticated, redirecting to home...");
-      navigate("/", { replace: true });
+      console.log("🔄 Already authenticated, redirecting...");
+      const returnPath = getReturnToPath();
+      console.log("🔄 Redirecting already authenticated user to:", returnPath);
+      navigate(returnPath, { replace: true });
     }
-  }, [isAuthenticated, isLoading, navigate, isPending, hasCheckedAuth]);
+  }, [
+    isAuthenticated,
+    isLoading,
+    navigate,
+    isPending,
+    hasCheckedAuth,
+    location.search,
+  ]);
 
   const onSubmit = (data: LoginRequest) => {
     console.log("🔐 Attempting login...");
@@ -180,7 +204,7 @@ const LoginForm = () => {
         {/* Sign Up Link */}
         <div className="text-center pt-4 border-t border-[#eceadd]">
           <p className="text-sm text-[#6f6552]">
-            Don’t have an account?{" "}
+            Don't have an account?{" "}
             <Link
               to="/register"
               className="font-medium text-[#4b4032] hover:text-[#645746] transition"

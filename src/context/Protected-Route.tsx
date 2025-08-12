@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/Use-Auth";
 import { useEffect, useState } from "react";
 
@@ -9,6 +9,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading, checkAuth } = useAuth();
   const [hasCheckedAuth, setHasCheckedAuth] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     // Explicitly check authentication when protected route is accessed
@@ -32,9 +33,14 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
-  // Redirect to login if not authenticated
+  // Redirect to login if not authenticated, including current location
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    const returnTo = encodeURIComponent(location.pathname + location.search);
+    console.log(
+      "🚫 Not authenticated, redirecting to login with returnTo:",
+      location.pathname + location.search
+    );
+    return <Navigate to={`/login?returnTo=${returnTo}`} replace />;
   }
 
   // Render children if authenticated

@@ -48,6 +48,7 @@ export default function GalleryItems() {
     },
     staleTime: 5 * 60 * 1000,
   });
+  console.log(galleryData);
 
   const galleryItems = galleryData?.results || [];
 

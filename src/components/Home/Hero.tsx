@@ -89,7 +89,7 @@ export default function Hero() {
         {/* About Section */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
           {/* Text Left */}
-          <div className="text-black py-40 px-8">
+          <div className="text-black py-8 px-4 md:py-40 md:px-8">
             <h2 className="font-display text-[30px] font-bold mb-3 leading-snug">
               Welcome to Beautiful <br /> Eyebrow Threading & Henna
             </h2>
