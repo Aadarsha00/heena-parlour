@@ -1,15 +1,23 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import {
+  Calendar,
+  Clock,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  User,
+  AlertCircle,
+} from "lucide-react";
 import { getBlogCategories, getBlogPosts } from "../../api/blog.api";
 import type { BlogApiResponse } from "../../interface/blog.interface";
 
 const POSTS_PER_PAGE = 9;
 
 export default function BlogGrid() {
-  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("All Posts");
   const [currentPage, setCurrentPage] = useState(1);
+  const [hoveredPost, setHoveredPost] = useState<number | null>(null);
 
   // Fetch categories for filter buttons
   const { data: backendCategories = [] } = useQuery({
@@ -34,6 +42,7 @@ export default function BlogGrid() {
         is_published: true,
       }),
   });
+
   // Handle pagination (client-side for now, can be moved to backend)
   const allPosts = blogResponse?.results || [];
   const paginatedPosts = allPosts.slice(
@@ -47,14 +56,15 @@ export default function BlogGrid() {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
   };
 
   // Handle navigation to blog post
   const handleReadMore = (slug: string) => {
-    navigate(`/blog/${slug}`);
+    // Replace with your navigation logic
+    window.location.href = `/blog/${slug}`;
   };
 
   // Reset page when category changes
@@ -64,152 +74,269 @@ export default function BlogGrid() {
 
   if (error) {
     return (
-      <div className="bg-[#FFFBE7] pt-0">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-red-600">Failed to load blog posts</div>
+      <div className="bg-gradient-to-br from-stone-50 via-amber-50/30 to-white min-h-screen flex items-center justify-center">
+        <div className="bg-gradient-to-br from-red-50 to-rose-50 border border-red-200/30 rounded-3xl p-8 max-w-md mx-auto">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-400 to-red-500 rounded-2xl flex items-center justify-center flex-shrink-0">
+              <AlertCircle className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-red-900 mb-2">
+                Unable to Load Posts
+              </h3>
+              <p className="text-red-700">
+                We're experiencing technical difficulties. Please try again
+                later.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#FFFBE7] pt-0">
-      {/* Filter Section (Full width) */}
-      <div className="w-full bg-[#FBF5C7] py-6 px-5 flex justify-center">
-        <div className="flex gap-4 flex-wrap justify-center w-full max-w-screen-xl">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => {
-                setSelectedCategory(cat);
-                setCurrentPage(1);
-              }}
-              className={`text-black px-4 py-2 text-sm font-semibold border rounded-full transition-all duration-200 hover:bg-[#E5C862] ${
-                selectedCategory === cat
-                  ? "bg-[#B97E47] text-white"
-                  : "bg-white"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+    <div className="bg-gradient-to-br from-stone-50 via-amber-50/30 to-white min-h-screen">
+      {/* Header Section */}
+      <div className="pt-20 pb-12 px-6">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="inline-flex items-center gap-4 mb-6">
+            <div className="w-12 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+            <span className="text-sm font-medium text-stone-600 tracking-widest uppercase">
+              Insights
+            </span>
+            <div className="w-12 h-px bg-gradient-to-r from-transparent via-amber-400 to-transparent"></div>
+          </div>
+
+          <h1 className="text-5xl font-display font-light text-stone-900 mb-6">
+            Beauty
+            <span className="block text-6xl font-thin bg-gradient-to-r from-amber-600 to-yellow-500 bg-clip-text text-transparent mt-2">
+              Journal
+            </span>
+          </h1>
+
+          <p className="text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed font-light">
+            Discover expert tips, trends, and insights from our beauty
+            professionals
+          </p>
+        </div>
+      </div>
+
+      {/* Category Filter */}
+      <div className="px-6 mb-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-wrap gap-4 justify-center">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-6 py-3 rounded-full font-medium tracking-wide transition-all duration-300 ${
+                  selectedCategory === category
+                    ? "bg-gradient-to-r from-stone-900 to-stone-800 text-white shadow-lg"
+                    : "bg-white/80 backdrop-blur-sm text-stone-600 hover:bg-white hover:shadow-md border border-stone-200/30"
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Loading State */}
       {isLoading && (
-        <div className="px-5 py-10">
-          <div className="flex justify-center items-center h-64">
-            <div className="text-lg text-gray-600">Loading blog posts...</div>
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-stone-200 rounded-full"></div>
+            <div className="absolute top-0 left-0 w-16 h-16 border-4 border-amber-500 rounded-full border-t-transparent animate-spin"></div>
           </div>
+          <p className="mt-6 text-stone-600 font-light">
+            Loading inspiring content...
+          </p>
         </div>
       )}
 
-      {/* Blog Cards */}
+      {/* Blog Grid */}
       {!isLoading && (
-        <div className="px-5 py-10">
-          {paginatedPosts.length === 0 ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="text-lg text-gray-600">
-                No blog posts found
-                {selectedCategory !== "All Posts"
-                  ? ` in category "${selectedCategory}"`
-                  : ""}
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-5 max-w-[1400px] mx-auto">
-                {paginatedPosts.map((post) => (
-                  <div
-                    key={post.id}
-                    className="bg-white rounded-xl shadow overflow-hidden flex flex-col h-[420px]"
-                  >
-                    <div className="h-[50%] w-full">
-                      <img
-                        src={post.featured_image_url || "pictures/img3.png"}
-                        alt={post.title}
-                        className="object-cover w-full h-full"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src =
-                            "pictures/img3.png";
-                        }}
-                      />
-                    </div>
-                    <div className="flex-1 p-5 flex flex-col justify-between">
-                      <div>
-                        <span className="bg-[#E5C862] text-xs font-semibold px-2 py-1 rounded-full text-gray-800 inline-block mb-2">
-                          {post.category}
-                        </span>
-                        <h3 className="text-md font-serif mb-1">
-                          {post.title}
-                        </h3>
-                        <p className="text-xs text-gray-700">{post.excerpt}</p>
-                      </div>
-                      <div className="flex items-center justify-between text-xs text-gray-600">
-                        <span>
-                          Admin
-                          <br />
-                          {formatDate(post.published_at)}
-                        </span>
-                        <span
-                          className="text-[#B19A50] font-semibold cursor-pointer hover:underline"
-                          onClick={() => handleReadMore(post.slug)}
-                        >
-                          Read More →
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex justify-center mt-10 gap-3">
-                  <button
-                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                    disabled={currentPage === 1}
-                    className="w-8 h-8 border rounded flex items-center justify-center text-sm disabled:opacity-50 hover:bg-gray-100"
-                  >
-                    ⟨
-                  </button>
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors ${
-                          page === currentPage
-                            ? "bg-[#B97E47] text-white"
-                            : "border hover:bg-gray-100"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    )
-                  )}
-                  <button
-                    onClick={() =>
-                      setCurrentPage((p) => Math.min(totalPages, p + 1))
-                    }
-                    disabled={currentPage === totalPages}
-                    className="w-8 h-8 border rounded flex items-center justify-center text-sm disabled:opacity-50 hover:bg-gray-100"
-                  >
-                    ⟩
-                  </button>
+        <div className="px-6 pb-20">
+          <div className="max-w-7xl mx-auto">
+            {paginatedPosts.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="w-16 h-16 bg-gradient-to-r from-stone-200 to-stone-300 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <AlertCircle className="w-8 h-8 text-stone-500" />
                 </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
+                <h3 className="text-xl font-medium text-stone-900 mb-2">
+                  No Posts Found
+                </h3>
+                <p className="text-stone-600">
+                  {selectedCategory !== "All Posts"
+                    ? `No posts available in "${selectedCategory}" category.`
+                    : "No blog posts are currently available."}
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                  {paginatedPosts.map((post) => (
+                    <article
+                      key={post.id}
+                      className="group relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2"
+                      onMouseEnter={() => setHoveredPost(post.id)}
+                      onMouseLeave={() => setHoveredPost(null)}
+                    >
+                      {/* Image Container */}
+                      <div className="relative aspect-[4/3] overflow-hidden">
+                        <img
+                          src={
+                            post.featured_image_url ||
+                            "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=400&h=300&fit=crop"
+                          }
+                          alt={post.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=400&h=300&fit=crop";
+                          }}
+                        />
 
-      {/* Results Summary */}
-      {!isLoading && blogResponse && (
-        <div className="text-center text-sm text-gray-600 pb-6">
-          Showing {paginatedPosts.length} of {allPosts.length} posts
-          {selectedCategory !== "All Posts" && ` in "${selectedCategory}"`}
+                        {/* Category Badge */}
+                        <div className="absolute top-4 left-4">
+                          <span className="bg-gradient-to-r from-amber-400 to-yellow-500 text-white text-xs font-medium px-3 py-1 rounded-full shadow-lg">
+                            {post.category}
+                          </span>
+                        </div>
+
+                        {/* Read More Overlay */}
+                        <div
+                          className={`absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent flex items-center justify-center transition-opacity duration-300 ${
+                            hoveredPost === post.id
+                              ? "opacity-100"
+                              : "opacity-0"
+                          }`}
+                        >
+                          <button
+                            onClick={() => handleReadMore(post.slug)}
+                            className="bg-white/90 backdrop-blur-sm text-stone-900 px-6 py-3 rounded-full font-medium hover:bg-white transition-all duration-200 transform hover:scale-105"
+                          >
+                            Read Article
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-8">
+                        <h2 className="text-xl font-medium text-stone-900 mb-3 leading-tight group-hover:text-amber-600 transition-colors duration-200">
+                          {post.title}
+                        </h2>
+
+                        <p className="text-stone-600 leading-relaxed mb-6 font-light">
+                          {post.excerpt}
+                        </p>
+
+                        {/* Meta Information */}
+                        <div className="flex items-center justify-between text-sm text-stone-500">
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                              <User className="w-4 h-4" />
+                              <span>
+                                {"Beautiful Eyebrow Threading & Henna"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Calendar className="w-4 h-4" />
+                              <span>{formatDate(post.published_at)}</span>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => handleReadMore(post.slug)}
+                            className="flex items-center gap-2 text-amber-600 font-medium hover:text-amber-700 transition-colors duration-200"
+                          >
+                            <span>Read</span>
+                            <ArrowRight className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center items-center gap-4">
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="w-12 h-12 bg-white/80 backdrop-blur-sm border border-stone-200/30 rounded-full flex items-center justify-center disabled:opacity-50 hover:bg-white hover:shadow-md transition-all duration-200"
+                    >
+                      <ChevronLeft className="w-5 h-5 text-stone-600" />
+                    </button>
+
+                    <div className="flex gap-2">
+                      {Array.from(
+                        { length: Math.min(totalPages, 5) },
+                        (_, i) => {
+                          let pageNum;
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (currentPage <= 3) {
+                            pageNum = i + 1;
+                          } else if (currentPage >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = currentPage - 2 + i;
+                          }
+
+                          return (
+                            <button
+                              key={pageNum}
+                              onClick={() => setCurrentPage(pageNum)}
+                              className={`w-12 h-12 rounded-full font-medium transition-all duration-200 ${
+                                pageNum === currentPage
+                                  ? "bg-gradient-to-r from-stone-900 to-stone-800 text-white shadow-lg"
+                                  : "bg-white/80 backdrop-blur-sm text-stone-600 border border-stone-200/30 hover:bg-white hover:shadow-md"
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          );
+                        }
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() =>
+                        setCurrentPage((p) => Math.min(totalPages, p + 1))
+                      }
+                      disabled={currentPage === totalPages}
+                      className="w-12 h-12 bg-white/80 backdrop-blur-sm border border-stone-200/30 rounded-full flex items-center justify-center disabled:opacity-50 hover:bg-white hover:shadow-md transition-all duration-200"
+                    >
+                      <ChevronRight className="w-5 h-5 text-stone-600" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Results Summary */}
+                <div className="text-center mt-12">
+                  <p className="text-stone-500 font-light">
+                    Showing{" "}
+                    <span className="font-medium">{paginatedPosts.length}</span>{" "}
+                    of <span className="font-medium">{allPosts.length}</span>{" "}
+                    articles
+                    {selectedCategory !== "All Posts" && (
+                      <span>
+                        {" "}
+                        in{" "}
+                        <span className="font-medium">
+                          "{selectedCategory}"
+                        </span>
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
